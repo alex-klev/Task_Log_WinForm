@@ -1,0 +1,13 @@
+pyuic5 main_menu.ui -o main_menu.py
+pyuic5 boses_catalog.ui -o boses_catalog.py
+pyuic5 employes_catalog.ui -o employes_catalog.py
+
+
+
+
+
+
+
+
+
+

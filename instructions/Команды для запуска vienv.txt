@@ -1,0 +1,12 @@
+cd ClassnostDbPyQt5Linux
+
+source venv/bin/activate
+
+python3 main.py
+
+deactivate
+
+
+
+
+
