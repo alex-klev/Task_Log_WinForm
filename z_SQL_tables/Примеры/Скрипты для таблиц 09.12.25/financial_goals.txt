@@ -1,0 +1,36 @@
+ALTER TABLE financial_goals ADD COLUMN type_goal_name TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT 'income';
+UPDATE financial_goals SET type_goal_name = 'income' WHERE type_goal_id = 1;
+UPDATE financial_goals SET type_goal_name = 'expense' WHERE type_goal_id = 2;
+
+-- Создаём новую таблицу
+CREATE TABLE financial_goals_new (
+	goal_id       INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	data_id        TEXT NOT NULL ON CONFLICT ROLLBACK,
+	user_id        INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	type_goal_name TEXT NOT NULL ON CONFLICT ROLLBACK,
+	goal_name      TEXT NOT NULL ON CONFLICT ROLLBACK,
+	goal_category  TEXT NOT NULL ON CONFLICT ROLLBACK,
+	cash_data      NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	date_month     INTEGER NOT NULL ON CONFLICT ROLLBACK,
+	date_year      INTEGER NOT NULL ON CONFLICT ROLLBACK,
+	deleted_flg    INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_financial_goals_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Переносим данные
+INSERT INTO financial_goals_new (goal_id, data_id, user_id, type_goal_name, goal_name, goal_category, cash_data, date_month, date_year, deleted_flg, current_datetime)
+SELECT goal_id, data_id, user_id, type_goal_name, goal_name, goal_category, cash_data, date_month, date_year, deleted_flg, current_datetime FROM financial_goals;
+
+-- Провеяем
+SELECT goal_id, data_id, user_id, type_goal_name, goal_name, goal_category, cash_data, date_month, date_year, deleted_flg, current_datetime
+FROM financial_goals_new;
+
+-- Удаляем старую таблицу
+DROP TABLE financial_goals;
+
+-- Переименовываем новую
+ALTER TABLE financial_goals_new RENAME TO financial_goals;
+
+-- Удаляем таблицу reference_type_goal
+DROP TABLE reference_type_goal;

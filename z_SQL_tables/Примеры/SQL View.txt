@@ -1,0 +1,29 @@
+WITH Tbl_lawcomm AS (
+    SELECT lawcomm.comments_id,
+           lawcomm.user_id,
+           lawcomm.service_id,
+           lawcomm.status_id,
+           ss.status_name,
+           lawcomm.lawyers_comment,
+           lawcomm.current_datetime
+      FROM lawyers_comments lawcomm
+      LEFT JOIN status_service ss ON lawcomm.status_id = ss.status_id
+)
+
+--SELECT * FROM Tbl_lawcomm;
+
+
+
+SELECT ls.service_id,
+       ls.user_id,
+       ls.status_id,
+       ls.user_name,
+       ls.phone,
+       ls.problem,
+       ls.comment_user,      
+       ls.current_datetime AS dateTimeUserRecord,
+       Tbl_lawcomm.status_name,
+       Tbl_lawcomm.lawyers_comment,
+       Tbl_lawcomm.current_datetime AS dateTimeLawyerRecord
+  FROM legal_services ls
+  LEFT JOIN Tbl_lawcomm ON ls.service_id = Tbl_lawcomm.service_id

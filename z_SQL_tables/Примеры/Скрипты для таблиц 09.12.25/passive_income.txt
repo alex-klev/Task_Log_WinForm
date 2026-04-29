@@ -1,0 +1,36 @@
+ALTER TABLE passive_income ADD COLUMN plan_name TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT 'main';
+UPDATE passive_income SET plan_name = 'main' WHERE plan_id = 1;
+UPDATE passive_income SET plan_name = 'min' WHERE plan_id = 2;
+UPDATE passive_income SET plan_name = 'max' WHERE plan_id = 3;
+
+-- Создаём новую таблицу
+CREATE TABLE passive_income_new (
+	passive_income_id         INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	user_id                   INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	plan_name                 TEXT NOT NULL ON CONFLICT ROLLBACK,
+	passive_income            INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	age                       INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	years_left                INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	capital                   INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	investing                 INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	investing_with_investment INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime           DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_passive_income_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Переносим данные
+INSERT INTO passive_income_new (passive_income_id, user_id, plan_name, passive_income, age, years_left, capital, investing, investing_with_investment, current_datetime)
+SELECT passive_income_id, user_id, plan_name, passive_income, age, years_left, capital, investing, investing_with_investment, current_datetime FROM passive_income;
+
+-- Провеяем
+SELECT passive_income_id, user_id, plan_name, passive_income, age, years_left, capital, investing, investing_with_investment, current_datetime
+FROM passive_income_new;
+
+-- Удаляем старую таблицу
+DROP TABLE passive_income;
+
+-- Переименовываем новую
+ALTER TABLE passive_income_new RENAME TO passive_income;
+
+-- Удаляем таблицу reference_plans
+DROP TABLE reference_plans;

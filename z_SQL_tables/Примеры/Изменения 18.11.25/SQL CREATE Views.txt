@@ -1,0 +1,32 @@
+CREATE VIEW lawyers_view AS
+WITH Tbl_lawcomm AS (
+        SELECT lawcomm.comment_id,
+               lawcomm.data_id,
+               lawcomm.user_id,
+               lawcomm.service_id,
+               lawcomm.status_id,
+               ss.status_name,
+               lawcomm.lawyer_comment,
+               lawcomm.deleted_flg,
+               lawcomm.current_datetime
+          FROM lawyer_comments lawcomm
+               LEFT JOIN
+               status_service ss ON lawcomm.status_id = ss.status_id
+    )
+    SELECT ls.service_id AS legal_service_id,
+           IIF(Tbl_lawcomm.comment_id ISNULL, 0, Tbl_lawcomm.comment_id) AS lawyer_comment_id,
+           IIF(Tbl_lawcomm.data_id ISNULL, -1, Tbl_lawcomm.data_id) AS lawyer_comment_data_id,
+           ls.user_id,
+           iif(Tbl_lawcomm.status_id ISNULL, 1, Tbl_lawcomm.status_id) AS lawyer_comment_status_id,
+           ls.user_name,
+           ls.phone AS user_phone,
+           ls.problem AS user_problem,
+           ls.user_comment,
+           ls.current_datetime AS dateTimeUserRecord,
+           IIF(Tbl_lawcomm.status_name ISNULL, 'Новая', Tbl_lawcomm.status_name) AS lawyer_comment_status_name,
+           IIF(Tbl_lawcomm.lawyer_comment ISNULL, '', Tbl_lawcomm.lawyer_comment) AS lawyer_comment,
+           IIF(Tbl_lawcomm.current_datetime ISNULL, '', Tbl_lawcomm.current_datetime) AS dateTimeLawyerRecord,
+           IIF(Tbl_lawcomm.deleted_flg ISNULL, 0, Tbl_lawcomm.deleted_flg) AS deleted_flg
+      FROM legal_services ls
+           LEFT JOIN
+           Tbl_lawcomm ON ls.service_id = Tbl_lawcomm.service_id;

@@ -1,0 +1,21 @@
+CREATE VIEW history_goals_expense_view AS WITH history_goals AS 
+(
+	SELECT 
+		e.id,
+		e.id_user, 
+		e.id_goal,
+		SUBSTR(eg.current_datetime, 1, 10) AS cur_datetime, 
+		eg.period,
+		eg.goal_cash,
+		e.category, 
+		e.date_, 
+		e.cash, 
+		e.current_datetime
+	FROM expense e
+	LEFT JOIN expense_goals eg ON e.id_goal = eg.goal_id
+)
+
+SELECT id_user,  SUBSTR(cur_datetime, 4, 7) AS month_year, period, goal_cash,  SUM(cash) AS sum_cash, ROUND(SUM(cash) * 100.00 / goal_cash, 2) AS percent
+FROM history_goals
+GROUP BY id_user, month_year, period, goal_cash
+HAVING month_year = SUBSTR(STRFTIME('%d.%m.%Y', DATE('now', 'start of month', '-1 month')), 4, 7);
