@@ -1,5 +1,5 @@
-from .boses_catalog import BosesCatalog
-from .employes_catalog import EmployesCatalog
+from .boses_catalog_actions import BosesCatalog
+from .employes_catalog_actions import EmployesCatalog
 
 
 __all__ = [

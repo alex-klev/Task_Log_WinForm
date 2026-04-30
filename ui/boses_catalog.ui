@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </size>
   </property>
   <property name="font">
@@ -28,17 +28,20 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Справочник начальников</string>
+   <string>Справочник руководителей</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTableView" name="tableView">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>241</width>
-      <height>191</height>
+      <height>211</height>
      </rect>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
     </property>
     <property name="selectionMode">
      <enum>QAbstractItemView::SingleSelection</enum>
@@ -51,20 +54,23 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>20</y>
+      <y>70</y>
       <width>241</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
+    <property name="maxLength">
+     <number>25</number>
+    </property>
     <property name="placeholderText">
-     <string>Ф.И.О.</string>
+     <string>Ф.И.О. руководителя</string>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget_4">
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>60</y>
+      <y>120</y>
       <width>241</width>
       <height>41</height>
      </rect>
@@ -80,7 +86,7 @@
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/add2.ico</normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/add2.ico</iconset>
+         <normaloff>../buttonIcons/add2.ico</normaloff>../buttonIcons/add2.ico</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -100,7 +106,7 @@
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/delete2.ico</normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/delete2.ico</iconset>
+         <normaloff>../buttonIcons/delete2.ico</normaloff>../buttonIcons/delete2.ico</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -123,7 +129,7 @@
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/undo.ico</normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/undo.ico</iconset>
+         <normaloff>../buttonIcons/undo.ico</normaloff>../buttonIcons/undo.ico</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -143,7 +149,7 @@
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/replace2.ico</normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/replace2.ico</iconset>
+         <normaloff>../buttonIcons/replace2.ico</normaloff>../buttonIcons/replace2.ico</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -166,7 +172,72 @@
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/check2.ico</normaloff>../../../Finplan/WinFormPython/Finplan_Project_WinForm/buttonIcons/check2.ico</iconset>
+         <normaloff>../buttonIcons/check2.ico</normaloff>../buttonIcons/check2.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>259</x>
+      <y>10</y>
+      <width>241</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="lineEditFilter">
+       <property name="maxLength">
+        <number>25</number>
+       </property>
+       <property name="placeholderText">
+        <string>Фильтр...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="btnFilterOn">
+       <property name="toolTip">
+        <string>Применить фильтр</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/funnel.ico</normaloff>../buttonIcons/funnel.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btnFilterOff">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Убрать фильтр</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/funnel_delete.ico</normaloff>../buttonIcons/funnel_delete.ico</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -180,6 +251,18 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tableView</tabstop>
+  <tabstop>lineEditFilter</tabstop>
+  <tabstop>btnFilterOn</tabstop>
+  <tabstop>btnFilterOff</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>btnInsert</tabstop>
+  <tabstop>btnUpdate</tabstop>
+  <tabstop>btnDelete</tabstop>
+  <tabstop>btnSave</tabstop>
+  <tabstop>btnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

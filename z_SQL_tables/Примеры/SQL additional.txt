@@ -1,0 +1,36 @@
+WITH CTE_additional_goals AS (
+	SELECT ag.additional_goal_id, 
+			ag.id_user, 
+			ag.goal_name, 
+			ag.goal_assessment, 
+			ag.age, 
+			ag.savings, 
+			ag.years_left, 
+			ag.capital, 
+			ag.investing, 
+			ag.investing_savings, 
+			ag.current_datetime,
+			IIF(agf.id_additional_goal ISNULL, 0, agf.id_additional_goal) AS flag_value
+	FROM additional_goals ag
+	FULL JOIN
+		additional_goals_flag agf ON ag.additional_goal_id = agf.goals_id
+)
+
+SELECT * FROM CTE_additional_goals WHERE flag_value = 0;
+
+
+CREATE VIEW additional_goals_view AS
+
+SELECT ag.additional_goal_id, 
+		ag.id_user, 
+		ag.goal_name, 
+		ag.goal_assessment, 
+		ag.age, 
+		ag.savings, 
+		ag.years_left, 
+		ag.capital, 
+		ag.investing, 
+		ag.investing_savings, 
+		ag.current_datetime		
+FROM additional_goals ag
+WHERE ag.additional_goal_id NOT IN (SELECT id_additional_goal FROM additional_goals_flag);

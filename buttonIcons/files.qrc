@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>funnel.ico</file>
+    <file>funnel_delete.ico</file>
+    <file>add2.ico</file>
+    <file>replace2.ico</file>
+    <file>delete2.ico</file>
+    <file>check2.ico</file>
+    <file>undo.ico</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,31 @@
+DROP TABLE legal_services
+
+CREATE TABLE legal_services (
+	service_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	user_id    INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	status_id  INTEGER  DEFAULT (1) NOT NULL ON CONFLICT ROLLBACK REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	user_name  TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	phone      TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	problem    TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	user_comment TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	current_datetime DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL,
+	CONSTRAINT FK_legal_services_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_legal_services_status_service FOREIGN KEY (status_id) REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+DROP TABLE lawyer_comments
+
+CREATE TABLE lawyer_comments (
+    comment_id       INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    data_id          TEXT     NOT NULL ON CONFLICT ROLLBACK DEFAULT ('0'),
+    user_id          INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    service_id       INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES legal_services (service_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    status_id        INTEGER  DEFAULT (2) NOT NULL ON CONFLICT ROLLBACK REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    lawyer_comment   TEXT     NOT NULL ON CONFLICT ROLLBACK, 
+    deleted_flg      INTEGER  NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    current_datetime DATETIME NOT NULL DEFAULT (datetime('now', 'localtime') ),
+    CONSTRAINT FK_lawyers_comments_legal_services FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_lawyers_comments_legal_services FOREIGN KEY (service_id) REFERENCES legal_services (service_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_lawyers_comments_status_service FOREIGN KEY (status_id) REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE
+);

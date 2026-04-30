@@ -1,0 +1,21 @@
+SELECT j.JournalId,
+		j.IdPerson,
+		j.IdAdress,
+		p.PersonSurname ||" "|| p.PersonName ||" "|| p.PersonPatronymic AS ConcatName,
+		strftime('%d.%m.%Y', j.DateDocument) AS DateDocument,
+		j.OutgoingNumber,		
+		IIF(rd.RdNumberValue ISNULL,'', rd.RdNumberValue) AS RdNumberValue,
+		IIF(rs.RsNumberValue ISNULL,'', rs.RsNumberValue) AS RsNumberValue,
+		a.AdressName,
+		IIF(fn.FormNumberValue ISNULL,'', fn.FormNumberValue) AS FormNumberValue,
+		j.Description,
+		j.CurrentDatetime
+FROM Journal j
+LEFT JOIN Persons p ON j.IdPerson = p.PersonId,
+	  Adresses a ON j.IdAdress = a.AdressId
+FULL JOIN
+	RdNumber rd ON j.JournalId = rd.IdJournal
+FULL JOIN
+	RsNumber rs ON j.JournalId = rs.IdJournal
+FULL JOIN
+	FormNumber fn ON j.JournalId = fn.IdJournal;

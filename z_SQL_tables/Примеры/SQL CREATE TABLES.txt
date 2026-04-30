@@ -1,0 +1,376 @@
+CREATE VIEW additional_goals_view AS
+
+SELECT ag.additional_goal_id, 
+		ag.user_id, 
+		ag.goal_name, 
+		ag.goal_assessment, 
+		ag.age, 
+		ag.savings, 
+		ag.years_left, 
+		ag.capital, 
+		ag.investing, 
+		ag.investing_savings,
+		ag.deleted_flg,
+		ag.current_datetime
+FROM additional_goals ag
+WHERE ag.deleted_flg = 0;
+
+
+DROP TABLE status_service
+
+CREATE TABLE status_service (
+	status_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	status_name TEXT  NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK
+)
+
+DROP TABLE legal_services
+
+CREATE TABLE legal_services (
+	service_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	user_id    INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	status_id  INTEGER  DEFAULT (1) NOT NULL ON CONFLICT ROLLBACK REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	user_name  TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	phone      TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	problem    TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	user_comment TEXT     NOT NULL ON CONFLICT ROLLBACK,
+	current_datetime DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL,
+	CONSTRAINT FK_legal_services_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_legal_services_status_service FOREIGN KEY (status_id) REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+
+
+
+DROP TABLE lawyers_comments
+
+CREATE TABLE lawyers_comments (
+    comments_id  INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_id      INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    service_id   INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES legal_services (service_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    status_id    INTEGER  DEFAULT (2) NOT NULL ON CONFLICT ROLLBACK REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    comment      TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+    CONSTRAINT FK_lawyers_comments_legal_services FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_lawyers_comments_legal_services FOREIGN KEY (service_id) REFERENCES legal_services (service_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_lawyers_comments_status_service FOREIGN KEY (status_id) REFERENCES status_service (status_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+SELECT ls.service_id,
+	   ls.id_user,
+	   ls.id_status,
+	   ls.user_name,
+	   ls.phone,
+	   ls.comment,
+	   ss.status_name
+FROM legal_services ls
+LEFT JOIN status_service ss ON ls.id_status = ss.status_id
+
+
+
+
+
+DROP TABLE additional_goals;
+
+CREATE TABLE additional_goals (
+    additional_goal_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_id            INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    goal_name          TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    goal_assessment    INTEGER  DEFAULT (0) NOT NULL,
+    age                INTEGER  DEFAULT (0) NOT NULL,
+    savings            INTEGER  DEFAULT (0) NOT NULL,
+    years_left         INTEGER  DEFAULT (0) NOT NULL,
+    capital            INTEGER  DEFAULT (0) NOT NULL,
+    investing          INTEGER  DEFAULT (0) NOT NULL,
+    investing_savings  INTEGER  DEFAULT (0) NOT NULL,
+    deleted_flg        INTEGER  DEFAULT (0) NOT NULL,
+    current_datetime   DATETIME DEFAULT (datetime('now', 'localtime')) NOT NULL,
+    CONSTRAINT FK_additional_goals_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+DROP TABLE initial_invest;
+
+CREATE TABLE initial_invest (
+	initial_invest_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	user_id           INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	initial_invest    INTEGER DEFAULT (0) NOT NULL,
+	current_datetime  DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_initial_invest_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+DROP TABLE opros;
+
+CREATE TABLE opros (
+    opros_id         INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_id          INTEGER  REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+    total_score      INTEGER  NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    investment_term  TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    result_type      TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    description      TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+    CONSTRAINT FK_opros_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+DROP TABLE passive_income;
+
+CREATE TABLE passive_income (
+	passive_income_id         INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	user_id                   INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	plan_id                   INTEGER REFERENCES reference_plans (plan_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	passive_income            INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	age                       INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	years_left                INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	capital                   INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	investing                 INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	investing_with_investment INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime           DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+    CONSTRAINT FK_passive_income_reference_plans FOREIGN KEY (plan_id) REFERENCES reference_plans (plan_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_passive_income_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+CREATE TABLE passive_income (
+	passive_income_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	id_user INTEGER NOT NULL,
+	id_plan INTEGER NOT NULL,
+	passive_income INTEGER DEFAULT (0) NOT NULL,
+	age INTEGER DEFAULT (0) NOT NULL,
+	years_left INTEGER DEFAULT (0) NOT NULL,
+	capital INTEGER DEFAULT (0) NOT NULL,
+	investing INTEGER DEFAULT (0) NOT NULL,
+	investing_with_investment INTEGER DEFAULT (0) NOT NULL,
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_passive_income_reference_plans FOREIGN KEY (id_plan) REFERENCES reference_plans(plan_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_passive_income_reference_users FOREIGN KEY (id_user) REFERENCES reference_users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE UNIQUE INDEX sqlite_autoindex_passive_income_1 ON passive_income (passive_income_id);
+
+
+
+
+DROP TABLE income;
+
+CREATE TABLE income (
+	income_id        INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	id_user          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	id_income_goal   INTEGER REFERENCES income_goals (income_goal_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	income_category  TEXT NOT NULL ON CONFLICT ROLLBACK,
+	income_date      DATETIME NOT NULL ON CONFLICT ROLLBACK, 
+	income_cash      NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_income_reference_users FOREIGN KEY (id_user) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_income_income_goals FOREIGN KEY (id_income_goal) REFERENCES income_goals (income_goal_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+DROP TABLE expense;
+
+CREATE TABLE expense (
+	expense_id       INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	id_user          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	id_expense_goal  INTEGER REFERENCES expense_goals (expense_goal_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	expense_category TEXT NOT NULL ON CONFLICT ROLLBACK,
+	expense_date     DATETIME NOT NULL ON CONFLICT ROLLBACK, 
+	expense_cash     NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_expense_reference_users FOREIGN KEY (id_user) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_expense_expense_goals FOREIGN KEY (id_expense_goal) REFERENCES expense_goals (expense_goal_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+
+
+******************************************************************************************
+******************************************************************************************
+******************************************************************************************
+************************ Таблицы созданы в июне 2025 *************************************
+
+DROP TABLE reference_budget;
+
+CREATE TABLE reference_budget (
+	budget_id INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	budget_name TEXT  NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK
+);
+
+
+DROP TABLE personal_budget;
+
+CREATE TABLE personal_budget (
+	pers_budget_id INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	data_id        TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT ('0'),
+	user_id        INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	budget_id      INTEGER REFERENCES reference_budget (budget_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	cash_data       NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	budget_category TEXT NOT NULL ON CONFLICT ROLLBACK,
+	budget_date    DATETIME NOT NULL ON CONFLICT ROLLBACK,
+	-- old_data       INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	deleted_flg    INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_personal_budget_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_personal_budget_reference_budget FOREIGN KEY (budget_id) REFERENCES reference_budget (budget_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+DROP TABLE reference_type_goal;
+
+CREATE TABLE reference_type_goal (
+	type_goal_id INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	type_goal_name TEXT  NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK
+);
+
+
+
+DROP TABLE financial_goals;
+
+CREATE TABLE financial_goals (
+	goal_id       INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	data_id        TEXT NOT NULL ON CONFLICT ROLLBACK,
+	user_id        INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	type_goal_id   INTEGER REFERENCES reference_type_goal (type_goal_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	goal_name      TEXT NOT NULL ON CONFLICT ROLLBACK,
+	goal_category  TEXT NOT NULL ON CONFLICT ROLLBACK,
+	cash_data      NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	date_month     INTEGER NOT NULL ON CONFLICT ROLLBACK,
+	date_year      INTEGER NOT NULL ON CONFLICT ROLLBACK,
+	deleted_flg    INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_financial_goals_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_financial_goals_reference_type_goal FOREIGN KEY (type_goal_id) REFERENCES reference_type_goal (type_goal_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+******************************************************************************************
+******************************************************************************************
+******************************************************************************************
+
+
+
+DROP TABLE planning_horizon;
+
+CREATE TABLE planning_horizon (
+    planning_id      INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_id          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+    user_name        TEXT    NOT NULL ON CONFLICT ROLLBACK,
+    current_age      INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    retirement_age   INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    investment_years INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    retirement_years INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+    current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+    CONSTRAINT FK_planning_horizon_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+DROP TABLE income_goals;
+
+CREATE TABLE income_goals (
+	income_goal_id   INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	id_user          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	period           TEXT NOT NULL ON CONFLICT ROLLBACK,
+	goal_cash        NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_income_goals_reference_users FOREIGN KEY (id_user) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+DROP TABLE expense_goals;
+
+CREATE TABLE expense_goals (
+	expense_goal_id  INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	id_user          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	period           TEXT NOT NULL ON CONFLICT ROLLBACK,
+	goal_cash        NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_expense_goals_reference_users FOREIGN KEY (id_user) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+
+
+
+DROP TABLE income;
+
+
+CREATE TABLE status_app (
+	status_app_id INTEGER  PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	status_name TEXT       NOT NULL ON CONFLICT ROLLBACK
+)
+
+
+
+
+CREATE TABLE income (
+	income_id   INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	id_user          INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	id_income_goal   INTEGER REFERENCES reference_users (income_goal_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	income_category  TEXT NOT NULL ON CONFLICT ROLLBACK,
+	income_date      DATETIME NOT NULL ON CONFLICT ROLLBACK, 
+	income_cash      NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_income_reference_users FOREIGN KEY (id_user) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FK_income_income_goals FOREIGN KEY (id_income_goal) REFERENCES income_goals (income_goal_id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DROP TABLE reference_plans;
+
+CREATE TABLE reference_plans (
+    plan_id   INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    plan_name TEXT    NOT NULL UNIQUE ON CONFLICT ROLLBACK
+);
+
+
+DROP TABLE reference_roles;
+
+CREATE TABLE reference_roles (
+    role_id   INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    role_name TEXT    NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK
+);
+
+
+DROP TABLE reference_users;
+
+CREATE TABLE reference_users (
+    user_id              INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_name            TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    email                TEXT     NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK,
+    phone_number         TEXT     NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK,
+    salt                 BLOB     NOT NULL ON CONFLICT ROLLBACK,
+    hash                 BLOB     NOT NULL ON CONFLICT ROLLBACK,
+    role_id              INTEGER  NOT NULL ON CONFLICT ROLLBACK REFERENCES reference_roles (role_id) ON DELETE CASCADE ON UPDATE CASCADE DEFAULT (3),
+    datetime_create_user DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+    CONSTRAINT FK_reference_users_reference_roles FOREIGN KEY (role_id) REFERENCES reference_roles (role_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+

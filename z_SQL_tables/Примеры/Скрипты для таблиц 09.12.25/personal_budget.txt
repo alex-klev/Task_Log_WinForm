@@ -1,0 +1,34 @@
+ALTER TABLE personal_budget ADD COLUMN budget_name TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT 'income';
+UPDATE personal_budget SET budget_name = 'income' WHERE budget_id = 1;
+UPDATE personal_budget SET budget_name = 'expense' WHERE budget_id = 2;
+
+-- Создаём новую таблицу
+CREATE TABLE personal_budget_new (
+	pers_budget_id INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+	data_id        TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT ('0'),
+	user_id        INTEGER REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
+	budget_name     TEXT NOT NULL ON CONFLICT ROLLBACK,
+	cash_data       NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
+	budget_category TEXT NOT NULL ON CONFLICT ROLLBACK,
+	budget_date    DATETIME NOT NULL ON CONFLICT ROLLBACK,
+	deleted_flg    INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
+	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
+	CONSTRAINT FK_personal_budget_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Переносим данные
+INSERT INTO personal_budget_new (pers_budget_id, data_id, user_id, budget_name, cash_data, budget_category, budget_date, deleted_flg, current_datetime)
+SELECT pers_budget_id, data_id, user_id, budget_name, cash_data, budget_category, budget_date, deleted_flg, current_datetime FROM personal_budget;
+
+-- Провеяем
+SELECT pers_budget_id, data_id, user_id, budget_name, cash_data, budget_category, budget_date, deleted_flg, current_datetime
+FROM personal_budget_new;
+
+-- Удаляем старую таблицу
+DROP TABLE personal_budget;
+
+-- Переименовываем новую
+ALTER TABLE personal_budget_new RENAME TO personal_budget;
+
+-- Удаляем таблицу reference_budget
+DROP TABLE reference_budget;

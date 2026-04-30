@@ -1,0 +1,33 @@
+ALTER TABLE reference_users ADD COLUMN role_name TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT 'sa';
+UPDATE reference_users SET role_name = 'sa' WHERE role_id = 1;
+UPDATE reference_users SET role_name = 'lawyer' WHERE role_id = 2;
+UPDATE reference_users SET role_name = 'user' WHERE role_id = 3;
+
+-- Создаём новую таблицу
+CREATE TABLE reference_users_new (
+    user_id              INTEGER PRIMARY KEY ASC ON CONFLICT ROLLBACK AUTOINCREMENT UNIQUE ON CONFLICT ROLLBACK NOT NULL ON CONFLICT ROLLBACK,
+    user_name            TEXT     NOT NULL ON CONFLICT ROLLBACK,
+    email                TEXT     NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK,
+    phone_number         TEXT     NOT NULL ON CONFLICT ROLLBACK UNIQUE ON CONFLICT ROLLBACK,
+    salt                 BLOB     NOT NULL ON CONFLICT ROLLBACK,
+    hash                 BLOB     NOT NULL ON CONFLICT ROLLBACK,
+    role_name            TEXT     NOT NULL ON CONFLICT ROLLBACK DEFAULT 'user',
+    datetime_create_user DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime'))
+);
+
+-- Переносим данные
+INSERT INTO reference_users_new (user_id, user_name, email, phone_number, salt, hash, role_name, datetime_create_user)
+SELECT user_id, user_name, email, phone_number, salt, hash, role_name, datetime_create_user FROM reference_users;
+
+-- Провеяем
+SELECT user_id, user_name, email, phone_number, salt, hash, role_name, datetime_create_user
+FROM reference_users_new;
+
+-- Удаляем старую таблицу
+DROP TABLE reference_users;
+
+-- Переименовываем новую
+ALTER TABLE reference_users_new RENAME TO reference_users;
+
+-- Удаляем таблицу reference_roles
+DROP TABLE reference_roles;
