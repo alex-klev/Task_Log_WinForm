@@ -32,5 +32,5 @@ CREATE TABLE assets (
 	cash             NUMERIC(18,2) NOT NULL ON CONFLICT ROLLBACK DEFAULT (0.0),
 	deleted_flg      INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
 	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
-	CONSTRAINT FK_debt_obligations_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT FK_assets_reference_users FOREIGN KEY (user_id) REFERENCES reference_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );

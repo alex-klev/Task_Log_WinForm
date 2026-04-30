@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>511</width>
-    <height>221</height>
+    <height>231</height>
    </size>
   </property>
   <property name="font">
@@ -37,8 +37,14 @@
       <x>10</x>
       <y>10</y>
       <width>241</width>
-      <height>201</height>
+      <height>211</height>
      </rect>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
     </property>
     <property name="selectionMode">
      <enum>QAbstractItemView::SingleSelection</enum>
@@ -59,6 +65,9 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QLineEdit" name="lineEditFilter">
+       <property name="maxLength">
+        <number>25</number>
+       </property>
        <property name="placeholderText">
         <string>Фильтр...</string>
        </property>
@@ -117,6 +126,9 @@
       <width>241</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="maxLength">
+     <number>25</number>
     </property>
     <property name="placeholderText">
      <string>Ф.И.О. исполнителя</string>

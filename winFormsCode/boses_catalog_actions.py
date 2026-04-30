@@ -2,7 +2,6 @@
 import sys
 import datetime as dt
 import time
-import sqlite3 as sl
 
 # сторонние
 from PyQt5 import QtWidgets, QtGui # QtGui создает объект цвета в PyQt5 с использованием компонентов RGB 
@@ -14,7 +13,8 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from winForms import Ui_BosesCatalogWindow
 # from winForms.boses_catalog import Ui_BosesCatalogWindow
 
-import dbCode.db_actions as db_actions
+from dbCode import BossesCatalogDb
+# import dbCode.db_actions as db_actions
 
 
 class BosesCatalog(QtWidgets.QMainWindow):
@@ -90,8 +90,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
     
     def load_data_db(self):
         try:
-            # TODO Загружаем данные теста пользователя
-            bosses_catalog = db_actions.BossesCatalogDb()
+            bosses_catalog = BossesCatalogDb()
             data = bosses_catalog.load_data()
         except Exception as e:
             QMessageBox.warning(self, 'Внимание', "Ошибка при загрузке данных {e}".format(e=e))
@@ -261,16 +260,18 @@ class BosesCatalog(QtWidgets.QMainWindow):
                 
                 if data_id:
                     try:
-                        bosses_catalog = db_actions.BossesCatalogDb(p0=data_id)
-                        bosses_catalog.delete_data()
+                        bosses_catalog = BossesCatalogDb(
+                            p0=data_id, 
+                            p2=self.get_current_datetime()
+                        )
+                        bosses_catalog.mark_to_deleted()
+                        # bosses_catalog.delete_data()  # Полное удаление данных
                     except Exception as e:
-                        # QMessageBox.warning(self, 'Внимание', "Ошибка при удалении дополнительных целей для пользователя {id_user}: {e}".format(id_user=self.id_user, e=e))
                         QMessageBox.warning(self, 'Внимание', "Ошибка при удалении {e}".format(e=e))
                         return
                     else:
                         pass
                 else:
-                    # QMessageBox.warning(self, 'Внимание', "Ошибка при удалении дополнительных целей для пользователя {id_user}: {e}".format(id_user=self.id_user, e=e))
                     QMessageBox.warning(self, 'Внимание', "Ошибка при удалении {e}".format(e=e))
                     return
             
@@ -296,7 +297,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
                 return
             else:
                 # Проверка дублирования данных
-                bosses_catalog = db_actions.BossesCatalogDb(
+                bosses_catalog = BossesCatalogDb(
                     p0=data_id, 
                     p1=fio
                 )
@@ -307,7 +308,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
                     return
                 
                 try:
-                    bosses_catalog = db_actions.BossesCatalogDb(
+                    bosses_catalog = BossesCatalogDb(
                         p0=data_id, 
                         p1=fio, 
                         p2=self.get_current_datetime()
@@ -332,7 +333,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
                 return
             else:
                 # Проверка дублирования данных
-                bosses_catalog = db_actions.BossesCatalogDb(
+                bosses_catalog = BossesCatalogDb(
                     p0=data_id, 
                     p1=fio
                 )
@@ -343,7 +344,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
                     return
                 
                 try:
-                    bosses_catalog = db_actions.BossesCatalogDb(
+                    bosses_catalog = BossesCatalogDb(
                         p0=data_id, 
                         p1=fio, 
                         p2=self.get_current_datetime())
@@ -494,20 +495,6 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # self.ui_boses_catalog.spinBoxMoneyForGoal.setValue(0)
 
 
-class Actions:
-    # Для Astra Linux 1.6 (Python 3.5.3)
-    def __init__(self, ui, parent_window, **kwargs):
-        self.ui_boses_catalog = ui  # передаём ссылку на UI (type: Ui_BosesCatalogWindow)
-        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
-    
-    """
-    def __init__(self, ui: Ui_BosesCatalogWindow, parent_window, **kwargs):  # Добавлена аннотация типа (аннотация - подсказки для разработчиков)
-        self.ui_boses_catalog: Ui_BosesCatalogWindow = ui  # Аннотация типа для атрибута и передаём ссылку на UI (аннотация - подсказки для разработчиков)
-        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
-    """
-    
-
-
 class TableModel:
     # Для Astra Linux 1.6 (Python 3.5.3)
     def __init__(self, ui, parent_window, **kwargs):
@@ -560,7 +547,3 @@ class TableModel:
             # 6. Опционально: автоматическая подгонка ширины столбцов под содержимое
             header = self.ui_boses_catalog.tableView.horizontalHeader()
             header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        #! ####################################
-    
-    
-    
