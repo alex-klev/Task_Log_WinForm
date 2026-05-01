@@ -8,6 +8,8 @@ CREATE TABLE reference_bosses (
 	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime'))
 );
 
+INSERT INTO reference_bosses (data_id, fio) VALUES ('1', 'нет данных')
+
 
 DROP table reference_employes;
 
@@ -19,6 +21,8 @@ CREATE TABLE reference_employes (
 	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime'))
 );
 
+INSERT INTO reference_employes (data_id, fio) VALUES ('1', 'нет данных')
+
 
 DROP table journal;
 
@@ -27,10 +31,11 @@ CREATE TABLE journal (
 	data_id          TEXT NOT NULL ON CONFLICT ROLLBACK DEFAULT ('0'),
 	boss_id          INTEGER REFERENCES reference_bosses (boss_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
 	employee_id      INTEGER REFERENCES reference_employes (employee_id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL ON CONFLICT ROLLBACK,
-	date_start_task  DATE NOT NULL ON CONFLICT ROLLBACK,
 	task             TEXT NOT NULL ON CONFLICT ROLLBACK,
+	date_start_task  DATE NOT NULL ON CONFLICT ROLLBACK,
 	date_end_task    DATE NOT NULL ON CONFLICT ROLLBACK,
 	time_end_task    TIME NOT NULL ON CONFLICT ROLLBACK,
+	done             INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
 	deleted_flg      INTEGER NOT NULL ON CONFLICT ROLLBACK DEFAULT (0),
 	current_datetime DATETIME NOT NULL ON CONFLICT ROLLBACK DEFAULT (datetime('now', 'localtime')),
 	CONSTRAINT FK_journal_reference_bosses FOREIGN KEY (boss_id) REFERENCES reference_bosses (boss_id) ON DELETE CASCADE ON UPDATE CASCADE,
