@@ -12,7 +12,7 @@ AS
 	       strftime('%d.%m.%Y', j.date_end_task) AS date_end_task,
 	       -- strftime('%H:%M', j.time_end_task) AS time_end_task,
 	       IIF(j.time_end_task = '00:00','нет данных', strftime('%H:%M', j.time_end_task)) AS time_end_task,
-	       julianday(j.date_end_task) - julianday(j.date_start_task) AS days_difference
+	       julianday(j.date_end_task) - julianday(date('now', 'localtime')) AS days_difference
 	FROM journal j
 	LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
 	LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
