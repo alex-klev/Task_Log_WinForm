@@ -48,7 +48,7 @@ class EmployesCatalog(QtWidgets.QMainWindow):
         
         # Создаём модель таблицы
         table_model = TableModel(
-            ui=self.ui_employes_catalog, # Передаём ссылку на ui_personal_plan
+            ui=self.ui_employes_catalog, # Передаём ссылку на ui_employes_catalog
             parent_window=self  # Передаём ссылку на главное окно
         )
         table_model.create_model_table()  
