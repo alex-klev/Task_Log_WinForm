@@ -318,3 +318,67 @@ class EmployesCatalogDb:
                 print("Ошибка при работе с базой данных ", err)
             else:
                 conn.commit()
+
+
+class JournalDb:
+    """Справочник исполнителей"""
+    def __init__(self, **kwargs) -> None:
+        self.data_id = kwargs.get('p0')  # id записи
+        self.fio = kwargs.get('p1')  # Ф.И.О.
+        self.current_datetime = kwargs.get('p2')  # Текущая дата и время
+    
+    def load_data(self):
+        """Загружаем данные из таблицы"""
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # получаем все данные из таблицы reference_employes
+                # execute принимает в качестве параметров кортеж. Запятая нужна после self.user_id
+                data = cursor.execute(
+                    """SELECT 
+                            j.data_id,
+                            j.task,
+                            -- j.note,
+                            IFNULL(j.note, '-') AS note,
+                            strftime('%d.%m.%Y', j.date_start_task) AS date_start_task,
+                            strftime('%d.%m.%Y', j.date_end_task) AS date_end_task,
+                            -- IIF(j.time_end_task = '00:00','нет данных', strftime('%H:%M', j.time_end_task)) AS time_end_task,
+                            IFNULL(j.time_end_task, '-') AS time_end_task,
+                            -- COALESCE(j.time_end_task, 'нет данных') AS time_end_task,
+                            rb.fio AS boss_fio,
+                            re.fio AS employee_fio,
+                            ROUND(julianday(j.date_end_task) - julianday(date('now', 'localtime')), 0) AS days_difference,
+                            -- CEIL(julianday(j.date_end_task) - julianday(date('now', 'localtime'))) AS days_difference,
+                            j.done,
+                            j.boss_id,
+                            j.employee_id
+                        FROM journal j
+                        LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
+                        LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
+                    """
+                    ).fetchall()
+                
+                
+                
+                """
+                data = cursor.execute("SELECT additional_goal_id, goal_name, goal_assessment, age, savings, years_left, capital, investing, investing_savings, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY additional_goal_id) AS 'row_number' FROM additional_goals "
+                                "WHERE user_id = ? "
+                                "ORDER BY row_number", (self.user_id,)).fetchall()
+                """
+                
+                
+                
+                # data = cursor.execute("SELECT data_id, fio FROM employes ").fetchall()
+                
+                # print((cursor.fetchall()))
+                # data = cursor.fetchall()
+                # print(data)
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+                return [('',)]  # Возвращаем пустой список кортежа
+            else:
+                return data

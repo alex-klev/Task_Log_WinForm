@@ -1,0 +1,33 @@
+WITH JournalCTE
+AS
+(
+	SELECT j.data_id,
+		   -- j.boss_id,
+		   -- j.employee_id,
+	       rb.fio AS boss_fio,
+	       re.fio AS employee_fio,
+	       j.task,
+	       j.note,
+	       strftime('%d.%m.%Y', j.date_start_task) AS date_start_task,
+	       strftime('%d.%m.%Y', j.date_end_task) AS date_end_task,
+	       -- strftime('%H:%M', j.time_end_task) AS time_end_task,
+	       IIF(j.time_end_task = '00:00','нет данных', strftime('%H:%M', j.time_end_task)) AS time_end_task,
+	       julianday(j.date_end_task) - julianday(date('now', 'localtime')) AS days_difference
+	FROM journal j
+	LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
+	LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
+	WHERE j.deleted_flg = 0 AND j.done = 0
+)
+
+SELECT data_id,
+	   --boss_id,
+	   -- employee_id,
+       boss_fio,
+       employee_fio,
+       task,
+       note,
+       date_start_task,
+       date_end_task,
+       time_end_task,
+       days_difference
+FROM JournalCTE

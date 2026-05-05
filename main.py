@@ -16,6 +16,8 @@ from winForms import Ui_MainWindow
 from winFormsCode import BosesCatalog
 # from winFormsCode import employes_catalog_actions
 from winFormsCode import EmployesCatalog
+# from winFormsCode import journal_actions
+from winFormsCode import Journal
 
 class MainMenu(QtWidgets.QMainWindow):
     def __init__(self, **kwargs):
@@ -29,7 +31,7 @@ class MainMenu(QtWidgets.QMainWindow):
         
         self.ui_main_menu.btnBosesCatalog.clicked.connect(self.btn_boses_catalog)
         self.ui_main_menu.btnEmployesCatalog.clicked.connect(self.btn_employes_catalog)
-        self.ui_main_menu.btnTasksJournal.clicked.connect(self.btn_tasks_journal)
+        self.ui_main_menu.btnTasksJournal.clicked.connect(self.btn_journal)
         self.ui_main_menu.btnDeadlineExpires.clicked.connect(self.btn_deadline_expires)
     
     ######################################################
@@ -97,14 +99,14 @@ class MainMenu(QtWidgets.QMainWindow):
         self.start_form_employes_catalog.show()  # Запускаем форму employes_catalog
         self.close()  # Закрываем текущую форму
     
-    def btn_tasks_journal(self) -> None:
+    def btn_journal(self) -> None:
         """Запуск формы журнала задач"""
-        #! self.show_new_form = True  # Установка значения загрузки новой формы
-        # self.start_form_tasks_journal = TasksJournal()  # Подключаемся к классу TasksJournal
-        #! self.start_form_tasks_journal = tasks_journal.TasksJournal()  # Подключаемся к классу TasksJournal
-        # self.start_form_tasks_journal.load_all_data_persons()  # Загружаем данные
-        #! self.start_form_tasks_journal.show()  # Запускаем форму tasks_journal
-        #! self.close()  # Закрываем текущую форму
+        self.show_new_form = True  # Установка значения загрузки новой формы
+        self.start_form_journal = Journal()  # Подключаемся к классу TasksJournal
+        # self.start_form_journal = journal_actions.Journal()  # Подключаемся к классу TasksJournal
+        # self.start_form_journal.load_all_data_persons()  # Загружаем данные
+        self.start_form_journal.show()  # Запускаем форму journal
+        self.close()  # Закрываем текущую форму
     
     def btn_deadline_expires(self) -> None:
         """Запуск формы задач, где истекает срок выполнения"""
