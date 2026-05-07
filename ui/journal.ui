@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1142</width>
-    <height>584</height>
+    <width>1141</width>
+    <height>652</height>
    </rect>
   </property>
   <property name="font">
@@ -25,7 +25,7 @@
       <x>10</x>
       <y>70</y>
       <width>671</width>
-      <height>501</height>
+      <height>521</height>
      </rect>
     </property>
     <property name="alternatingRowColors">
@@ -113,14 +113,23 @@
      </item>
     </layout>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="groupBoxElements">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>690</x>
       <y>60</y>
       <width>441</width>
-      <height>511</height>
+      <height>531</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
     </property>
     <property name="title">
      <string>Работа с данными</string>
@@ -129,97 +138,26 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>30</y>
        <width>421</width>
-       <height>410</height>
+       <height>484</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="1">
-       <widget class="QComboBox" name="comboBoxBoss"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="comboBoxEmploye"/>
-      </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Примечание</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QCheckBox" name="checkBox">
-        <property name="text">
-         <string>Выполнено</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Завершение
-выполнения</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Начало
-выполнения</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QDateEdit" name="dateEditStart">
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPlainTextEdit" name="plainTextEditTask"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Задание</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPlainTextEdit" name="plainTextEditNote"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Руководитель</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QTimeEdit" name="timeEdit">
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QDateEdit" name="dateEditEnd">
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Исполнитель</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="4" column="1">
+       <widget class="QPlainTextEdit" name="plainTextEditTask"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPlainTextEdit" name="plainTextEditNote"/>
+      </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Завершение
@@ -227,128 +165,87 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="2">
-       <widget class="QCheckBox" name="checkBox_2">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="gridLayoutWidget_4">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>460</y>
-       <width>241</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="btnInsert">
-        <property name="toolTip">
-         <string>Добавление записи</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../buttonIcons/add2.ico</normaloff>../buttonIcons/add2.ico</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="btnDelete">
-        <property name="toolTip">
-         <string>Удаление записи</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../buttonIcons/delete2.ico</normaloff>../buttonIcons/delete2.ico</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="btnCancel">
-        <property name="enabled">
+      <item row="8" column="1">
+       <widget class="QTimeEdit" name="timeEdit">
+        <property name="calendarPopup">
          <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Отмена</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../buttonIcons/undo.ico</normaloff>../buttonIcons/undo.ico</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="btnUpdate">
-        <property name="toolTip">
-         <string>Редактирование записи</string>
-        </property>
+       <widget class="QLineEdit" name="lineEditFindBossFio"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../buttonIcons/replace2.ico</normaloff>../buttonIcons/replace2.ico</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
+         <string>Завершение
+выполнения</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="btnSave">
-        <property name="enabled">
-         <bool>false</bool>
+      <item row="9" column="1">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Выполнено</string>
         </property>
-        <property name="toolTip">
-         <string>Сохранение записи</string>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Начало
+выполнения</string>
         </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Задание</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Руководитель</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Примечание</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineEditFindEmployeFio"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDateEdit" name="dateEditEnd">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="comboBoxEmploye"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QDateEdit" name="dateEditStart">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxBoss"/>
+      </item>
+      <item row="8" column="2">
+       <widget class="QCheckBox" name="checkBox_2">
         <property name="text">
          <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../buttonIcons/check2.ico</normaloff>../buttonIcons/check2.ico</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -371,7 +268,7 @@
       <x>660</x>
       <y>20</y>
       <width>224</width>
-      <height>31</height>
+      <height>34</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
@@ -386,6 +283,124 @@
       <widget class="QDateEdit" name="dateEditTo">
        <property name="calendarPopup">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>600</y>
+      <width>241</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btnInsert">
+       <property name="toolTip">
+        <string>Добавление записи</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/add2.ico</normaloff>../buttonIcons/add2.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btnDelete">
+       <property name="toolTip">
+        <string>Удаление записи</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/delete2.ico</normaloff>../buttonIcons/delete2.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QPushButton" name="btnCancel">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Отмена</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/undo.ico</normaloff>../buttonIcons/undo.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="btnUpdate">
+       <property name="toolTip">
+        <string>Редактирование записи</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/replace2.ico</normaloff>../buttonIcons/replace2.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="btnSave">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Сохранение записи</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../buttonIcons/check2.ico</normaloff>../buttonIcons/check2.ico</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
        </property>
       </widget>
      </item>

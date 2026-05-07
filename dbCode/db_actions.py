@@ -324,8 +324,31 @@ class JournalDb:
     """Справочник исполнителей"""
     def __init__(self, **kwargs) -> None:
         self.data_id = kwargs.get('p0')  # id записи
-        self.fio = kwargs.get('p1')  # Ф.И.О.
-        self.current_datetime = kwargs.get('p2')  # Текущая дата и время
+        self.boss_id = kwargs.get('p1')  # id руководителя
+        self.employee_id = kwargs.get('p2')  # id исполнителя
+        self.task = kwargs.get('p3')  # задание
+        self.note = kwargs.get('p4', None)  # примечание
+        self.date_start_task = kwargs.get('p5')  # дата начала задачи
+        self.date_end_task = kwargs.get('p6')  # дата окончания задачи
+        self.time_end_task = kwargs.get('p7', None)  # время окончания задачи
+        self.done = kwargs.get('p8', 0)  # отметка о выполнении
+        self.current_datetime = kwargs.get('p9')  # Текущая дата и время
+        
+        """
+        print(self.data_id, 
+                self.boss_id,
+                self.employee_id, 
+                self.task,
+                self.note,
+                self.date_start_task,
+                self.date_end_task,
+                self.time_end_task,
+                self.done,
+                self.current_datetime,
+        )
+        """
+        
+        # self.lang = kwargs.get("lang", 'ru')  # Язык приложения (Если значение is None, тогда значение = 'ru')
     
     def load_data(self):
         """Загружаем данные из таблицы"""
@@ -359,18 +382,15 @@ class JournalDb:
                         FROM journal j
                         LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
                         LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
+                        ORDER BY done, days_difference
                     """
                     ).fetchall()
-                
-                
                 
                 """
                 data = cursor.execute("SELECT additional_goal_id, goal_name, goal_assessment, age, savings, years_left, capital, investing, investing_savings, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY additional_goal_id) AS 'row_number' FROM additional_goals "
                                 "WHERE user_id = ? "
                                 "ORDER BY row_number", (self.user_id,)).fetchall()
                 """
-                
-                
                 
                 # data = cursor.execute("SELECT data_id, fio FROM employes ").fetchall()
                 
@@ -382,3 +402,158 @@ class JournalDb:
                 return [('',)]  # Возвращаем пустой список кортежа
             else:
                 return data
+    
+    def load_data_bosses(self):
+        """Загружаем данные из таблицы"""
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # получаем все данные из таблицы reference_bosses
+                # execute принимает в качестве параметров кортеж. Запятая нужна после self.user_id
+                data = cursor.execute("SELECT boss_id, fio FROM reference_bosses "
+                                      "WHERE deleted_flg = 0 "
+                                      "ORDER BY fio").fetchall()
+                
+                # data = cursor.execute("SELECT data_id, fio FROM reference_bosses ").fetchall()
+                
+                # print((cursor.fetchall()))
+                # data = cursor.fetchall()
+                # print(data)
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+                return [('',)]  # Возвращаем пустой список кортежа
+            else:
+                return data
+    
+    def load_data_employes(self):
+        """Загружаем данные из таблицы"""
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # получаем все данные из таблицы reference_employes
+                # execute принимает в качестве параметров кортеж. Запятая нужна после self.user_id
+                data = cursor.execute("SELECT employee_id, fio FROM reference_employes "
+                                      "WHERE deleted_flg = 0 "
+                                      "ORDER BY fio").fetchall()
+                
+                # data = cursor.execute("SELECT data_id, fio FROM employes ").fetchall()
+                
+                # print((cursor.fetchall()))
+                # data = cursor.fetchall()
+                # print(data)
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+                return [('',)]  # Возвращаем пустой список кортежа
+            else:
+                return data
+    
+    def insert_data(self) -> None:
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # execute принимает в качестве параметров кортеж. Запятая нужна после data
+                # cursor.execute("INSERT INTO table_name (abcd) VALUES(?)", (data,))       
+                
+                # Вставляем новую запись в таблицу reference_employes
+                cursor.execute(
+                    """INSERT INTO journal (
+                        data_id, 
+                        boss_id, 
+                        employee_id, 
+                        task, 
+                        note, 
+                        date_start_task, 
+                        date_end_task, 
+                        time_end_task, 
+                        done, 
+                        current_datetime
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        self.data_id, self.boss_id, self.employee_id, self.task, self.note, 
+                        self.date_start_task, self.date_end_task, self.time_end_task, self.done, self.current_datetime
+                    ))
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+            else:
+                # Выполняем транзакцию
+                conn.commit()
+    
+    def update_data(self) -> None:
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # execute принимает в качестве параметров кортеж. Запятая нужна после data
+                # cursor.execute("INSERT INTO table_name (abcd) VALUES(?)", (data,))       
+                
+                # Вставляем новую запись в таблицу reference_employes
+                cursor.execute(
+                    """INSERT INTO journal (
+                        data_id, 
+                        boss_id, 
+                        employee_id, 
+                        task, 
+                        note, 
+                        date_start_task, 
+                        date_end_task, 
+                        time_end_task, 
+                        done, 
+                        current_datetime
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        self.data_id, self.boss_id, self.employee_id, self.task, self.note, 
+                        self.date_start_task, self.date_end_task, self.time_end_task, self.done, self.current_datetime
+                    ))
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+            else:
+                # Выполняем транзакцию
+                conn.commit()
+    
+    def update_data(self) -> None:
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # Обновляем запись в таблице assets
+                cursor.execute(
+                    """UPDATE journal SET 
+                            boss_id = ?, 
+                            employee_id = ?, 
+                            task = ?, 
+                            note = ?, 
+                            date_start_task = ?, 
+                            date_end_task = ?, 
+                            time_end_task = ?, 
+                            done = ?, 
+                            current_datetime = ?
+                        WHERE data_id = ?""",
+                        (
+                            self.boss_id, self.employee_id, self.task, self.note, 
+                            self.date_start_task, self.date_end_task, self.time_end_task, self.done, self.current_datetime,
+                            self.data_id
+                        ))
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+            else:
+                # Выполняем транзакцию
+                conn.commit()
+
