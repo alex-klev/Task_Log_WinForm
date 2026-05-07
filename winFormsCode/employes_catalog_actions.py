@@ -350,7 +350,8 @@ class EmployesCatalog(QtWidgets.QMainWindow):
                     employes_catalog = EmployesCatalogDb(
                         p0=data_id, 
                         p1=fio, 
-                        p2=self.get_current_datetime())
+                        p2=self.get_current_datetime()
+                    )
                     employes_catalog.update_data()
                 except Exception as e:
                     QMessageBox.warning(self, 'Внимание', "Ошибка при редактировании данных {e}".format(e=e))
