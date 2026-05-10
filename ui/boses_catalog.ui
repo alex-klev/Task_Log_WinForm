@@ -204,49 +204,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btnFilterOn">
-       <property name="toolTip">
-        <string>Применить фильтр</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../buttonIcons/funnel.ico</normaloff>../buttonIcons/funnel.ico</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btnFilterOff">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Убрать фильтр</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../buttonIcons/funnel_delete.ico</normaloff>../buttonIcons/funnel_delete.ico</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -254,8 +211,6 @@
  <tabstops>
   <tabstop>tableView</tabstop>
   <tabstop>lineEditFilter</tabstop>
-  <tabstop>btnFilterOn</tabstop>
-  <tabstop>btnFilterOff</tabstop>
   <tabstop>lineEdit</tabstop>
   <tabstop>btnInsert</tabstop>
   <tabstop>btnUpdate</tabstop>

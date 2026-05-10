@@ -58,49 +58,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btnFilterOn">
-       <property name="toolTip">
-        <string>Применить фильтр</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../buttonIcons/funnel.ico</normaloff>../buttonIcons/funnel.ico</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="btnFilterOff">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Убрать фильтр</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../buttonIcons/funnel_delete.ico</normaloff>../buttonIcons/funnel_delete.ico</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QComboBox" name="comboBoxDataFilter">
        <property name="minimumSize">
@@ -140,7 +97,7 @@
        <x>10</x>
        <y>30</y>
        <width>421</width>
-       <height>484</height>
+       <height>531</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
@@ -267,7 +224,7 @@
      <rect>
       <x>660</x>
       <y>20</y>
-      <width>224</width>
+      <width>265</width>
       <height>34</height>
      </rect>
     </property>
