@@ -76,7 +76,8 @@ class BossesCatalogDb:
                 # получаем все данные из таблицы reference_bosses
                 # execute принимает в качестве параметров кортеж. Запятая нужна после self.user_id
                 data = cursor.execute("SELECT data_id, fio FROM reference_bosses "
-                                      "WHERE deleted_flg = 0 AND fio <> 'нет данных'").fetchall()
+                                      "WHERE deleted_flg = 0 AND fio <> 'нет данных' "
+                                    ).fetchall()
                 
                 # data = cursor.execute("SELECT data_id, fio FROM reference_bosses ").fetchall()
                 
@@ -230,7 +231,8 @@ class EmployesCatalogDb:
                 # получаем все данные из таблицы reference_employes
                 # execute принимает в качестве параметров кортеж. Запятая нужна после self.user_id
                 data = cursor.execute("SELECT data_id, fio FROM reference_employes "
-                                      "WHERE deleted_flg = 0 AND fio <> 'нет данных'").fetchall()
+                                      "WHERE deleted_flg = 0 AND fio <> 'нет данных' "
+                                    ).fetchall()
                 
                 # data = cursor.execute("SELECT data_id, fio FROM employes ").fetchall()
                 

@@ -44,11 +44,11 @@ class Journal(QtWidgets.QMainWindow):
         #self.ui_journal.btnDelete.clicked.connect(self.delete_data_from_db)  # Удалить запись из таблицы
         self.ui_journal.btnSave.clicked.connect(self.save_data_in_db)  # Сохранить запись в таблице
         self.ui_journal.btnCancel.clicked.connect(self.cancel)  # Отменить запись из таблицы
-        """
+        
         self.ui_journal.tableView.clicked.connect(self.on_cell_clicked)  # Клик по ячейке
         self.ui_journal.tableView.activated.connect(self.on_cell_activated)  # Данные в выбранной строке таблицы
         # self.ui_journal.tableView.pressed.connect(self.on_cell_pressed)  # Данные в выбранной строке таблицы
-        
+        """
         self.ui_journal.lineEdit.setEnabled(False)
         """
         
@@ -365,7 +365,7 @@ class Journal(QtWidgets.QMainWindow):
             return
         else:
             # Синхронизация значения полей со значением в таблице
-            # self.cell_clicked(current_row, 0)
+            self.cell_clicked(current_row, 0)
             # Установка фокуса на поле задание
             self.ui_journal.plainTextEditTask.setFocus(True)
             # Активация / деактивация элементов
@@ -406,11 +406,11 @@ class Journal(QtWidgets.QMainWindow):
             
             if boss_fio == 1:
                 QMessageBox.warning(self, "Внимание", "Не указан руководитель")
-                self.ui_journal.comboBoxBoss.setFocus()
+                self.ui_journal.lineEditFindBossFio.setFocus()
                 return
             elif employe_fio == 1:
                 QMessageBox.warning(self, "Внимание", "Не указан исполнитель")
-                self.ui_journal.comboBoxEmploye.setFocus()
+                self.ui_journal.lineEditFindEmployeFio.setFocus()
                 return
             elif task.strip() == "":
                 QMessageBox.warning(self, "Внимание", "Задание не указано")
@@ -549,7 +549,7 @@ class Journal(QtWidgets.QMainWindow):
     
     
     
-    def cell_clicked(self, row=None, column=None) -> None:
+    def cell_clicked___OLD(self, row=None, column=None) -> None:
         """Данные в выбранной строке таблицы"""
         # row - принимает координаты строки
         # column - принимает координаты столбца
@@ -740,20 +740,7 @@ class Journal(QtWidgets.QMainWindow):
         # column - принимает координаты столбца
         # print("Row %d and Column %d was clicked" % (row, column))
         
-        # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        self.value_elements(row)
     
     def on_cell_clicked(self, index):
         if index.isValid():
@@ -762,20 +749,7 @@ class Journal(QtWidgets.QMainWindow):
             # data = index.data()
             # print("Клик по строке {row}, столбцу {column}, данные: {data}".format(row=row, column=column, data=data))
             
-            # TODO Ф.И.О.
-            value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-            self.ui_employes_catalog.lineEdit.setText(value1)
-            """
-            # TODO Оценка цели
-            value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-            self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-            # TODO Желаемый возраст достижения цели
-            value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-            self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-            # TODO Имеющиеся накопления для достижения цели
-            value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-            self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-            """
+            self.value_elements(row)
     
     def on_cell_activated(self, index):
         """Данные в выбранной строке таблицы"""
@@ -785,21 +759,7 @@ class Journal(QtWidgets.QMainWindow):
         # print("Данные: {index_data}".format(index_data=index.data()))
         # Данные: index.data() или модель.index(row, col).data()
         
-        # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        self.value_elements(row)
     
     def on_cell_pressed(index):
         """Slot для обработки нажатия"""
@@ -811,6 +771,61 @@ class Journal(QtWidgets.QMainWindow):
         # Если нужно получить данные:
         # value = index.data()
         pass
+    
+    
+    def value_elements(self, row):
+        """Присваиваем значения элементам из таблицы"""
+        # TODO Задание
+        value1 = self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 1))
+        self.ui_journal.plainTextEditTask.setPlainText(value1)
+        
+        # TODO Примечание
+        value2 = self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 2))
+        self.ui_journal.plainTextEditNote.setPlainText(value2)
+        
+        # TODO Дата начала
+        slist1 = str(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 3))).split(".")
+        sdate1 = dt.date(int(slist1[2]), int(slist1[1]), int(slist1[0]))
+        self.ui_journal.dateEditStart.setDate(QDate(sdate1))
+        # self.ui_journal.dateEditStart.setDate(QDate(2023, 7, 25))
+        
+        # TODO Дата окончания
+        slist2 = str(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 4))).split(".")
+        sdate2 = dt.date(int(slist2[2]), int(slist2[1]), int(slist2[0]))
+        self.ui_journal.dateEditEnd.setDate(QDate(sdate2))
+        # self.ui_journal.dateEditEnd.setDate(QDate(2023, 7, 25))
+        
+        # TODO Время окончания
+        time_data = self.ui_journal.tableView.model().data(
+            self.ui_journal.tableView.model().index(row, 5)
+        )
+        
+        if time_data != '-':
+            self.ui_journal.checkBox_2.setChecked(True)
+            try:
+                parts = str(time_data).split(":")
+                if len(parts) == 2:
+                    hour, minute = int(parts[0]), int(parts[1])
+                    if 0 <= hour <= 23 and 0 <= minute <= 59:
+                        self.ui_journal.timeEdit.setTime(QTime(hour, minute))
+            except (ValueError, IndexError):
+                pass  # логирование ошибки при необходимости
+        else:
+            self.ui_journal.checkBox_2.setChecked(False)
+        
+        
+        """
+        # TODO Оценка цели
+        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
+        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
+        # TODO Желаемый возраст достижения цели
+        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
+        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
+        # TODO Имеющиеся накопления для достижения цели
+        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
+        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
+        """
+        
     
     
     
@@ -926,21 +941,61 @@ class BossFIO:
             fio = str(value_tuple[1])  # Указываем Ф.И.О.
             # fio = str(value_tuple[1]) + " " + str(value_tuple[2]) + " " + str(value_tuple[3])  # Указываем Ф.И.О.
             self.list_boss_fio.append(fio)  # Заполняем список (массив)
-            self.dict_boss_fio[fio] = _id   # Заполняем словарь (справочник)
+            # self.dict_boss_fio[fio] = _id   # Заполняем словарь (справочник)
+            self.dict_boss_fio[fio.lower()] = _id   # Заполняем словарь (справочник) - ключи в нижнем регистре
             
             self.ui_journal.comboBoxBoss.addItem(fio, _id)  # Добавляем Ф.И.О. и id
+            
+            """
+            # совмещаем QLineEdit с данными
+            ################################################
+            from PyQt5.QtWidgets import QCompleter
+            
+            self.completer_lineEditBossFio = QCompleter(self.list_boss_fio)
+            self.ui_journal.lineEditFindBossFio.setCompleter(self.completer_lineEditBossFio)
+            ################################################
+            """
             
             # совмещаем QLineEdit с данными
             ################################################
             from PyQt5.QtWidgets import QCompleter
+            from PyQt5.QtCore import Qt
+            
             self.completer_lineEditBossFio = QCompleter(self.list_boss_fio)
+            # Включаем регистронезависимую фильтрацию через отдельный метод
+            self.completer_lineEditBossFio.setCaseSensitivity(Qt.CaseInsensitive)
+            # Устанавливаем режим поиска (содержит подстроку)
+            self.completer_lineEditBossFio.setFilterMode(Qt.MatchContains)
             self.ui_journal.lineEditFindBossFio.setCompleter(self.completer_lineEditBossFio)
             ################################################
             
-            # Выводим id сотрудника
-            ################################################
-            # self.ui_journal.lineEditFindBossFio.editingFinished.connect(self.id_person_show)
+            # Установите режим завершения, который всегда показывает список
+            # self.completer_lineEditBossFio.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
     
+    def id_person_show(self) -> None:
+        if self.ui_journal.lineEditFindBossFio.text().strip():
+            search_text = self.ui_journal.lineEditFindBossFio.text().strip().lower()  # Приводим к нижнему регистру
+            try:
+                _id = self.dict_boss_fio[search_text]  # Ищем по ключу в нижнем регистре
+            except KeyError as err:
+                self.ui_journal.lineEditFindBossFio.setText("")
+                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                return 
+            else:
+                # Находим исходное написание ФИО для отображения
+                original_fio = None
+                for fio in self.list_boss_fio:
+                    if fio.lower() == search_text:
+                        original_fio = fio
+                        break
+                
+                if original_fio:
+                    self.ui_journal.comboBoxBoss.setCurrentText(original_fio)
+                    self.ui_journal.lineEditFindBossFio.setText("")
+        else:
+            return
+    
+    """
     def id_person_show(self) -> None:
         if self.ui_journal.lineEditFindBossFio.text().strip():
             try:
@@ -958,6 +1013,7 @@ class BossFIO:
                 self.ui_journal.lineEditFindBossFio.setText("")
         else:
             return
+    """
     
     def id_data_current_boss_fio(self) -> None:
         # self.id_person = self.ui_journal.comboBoxBoss.currentData()
@@ -1010,10 +1066,12 @@ class EmployeFIO:
             fio = str(value_tuple[1])  # Указываем Ф.И.О.
             # fio = str(value_tuple[1]) + " " + str(value_tuple[2]) + " " + str(value_tuple[3])  # Указываем Ф.И.О.
             self.list_employe_fio.append(fio)  # Заполняем список (массив)
-            self.dict_employe_fio[fio] = _id   # Заполняем словарь (справочник)
+            # self.dict_employe_fio[fio] = _id   # Заполняем словарь (справочник)
+            self.dict_employe_fio[fio.lower()] = _id   # Заполняем словарь (справочник) - ключи в нижнем регистре
             
             self.ui_journal.comboBoxEmploye.addItem(fio, _id)  # Добавляем Ф.И.О. и id
             
+            """
             # совмещаем QLineEdit с данными
             ################################################
             from PyQt5.QtWidgets import QCompleter
@@ -1024,7 +1082,48 @@ class EmployeFIO:
             # Выводим id сотрудника
             ################################################
             # self.ui_journal.lineEditFindEmployeFio.editingFinished.connect(self.id_person_show)
+            """
+            
+            # совмещаем QLineEdit с данными
+            ################################################
+            from PyQt5.QtWidgets import QCompleter
+            from PyQt5.QtCore import Qt
+            
+            self.completer_lineEditEmployeFio = QCompleter(self.list_employe_fio)
+            # Включаем регистронезависимую фильтрацию через отдельный метод
+            self.completer_lineEditEmployeFio.setCaseSensitivity(Qt.CaseInsensitive)
+            # Устанавливаем режим поиска (содержит подстроку)
+            self.completer_lineEditEmployeFio.setFilterMode(Qt.MatchContains)
+            self.ui_journal.lineEditFindEmployeFio.setCompleter(self.completer_lineEditEmployeFio)
+            ################################################
+            
+            # Установите режим завершения, который всегда показывает список
+            # self.completer_lineEditEmployeFio.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
     
+    def id_person_show(self) -> None:
+        if self.ui_journal.lineEditFindEmployeFio.text().strip():
+            search_text = self.ui_journal.lineEditFindEmployeFio.text().strip().lower()  # Приводим к нижнему регистру
+            try:
+                _id = self.dict_employe_fio[search_text]  # Ищем по ключу в нижнем регистре
+            except KeyError as err:
+                self.ui_journal.lineEditFindEmployeFio.setText("")
+                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                return 
+            else:
+                # Находим исходное написание ФИО для отображения
+                original_fio = None
+                for fio in self.list_employe_fio:
+                    if fio.lower() == search_text:
+                        original_fio = fio
+                        break
+                
+                if original_fio:
+                    self.ui_journal.comboBoxEmploye.setCurrentText(original_fio)
+                    self.ui_journal.lineEditFindEmployeFio.setText("")
+        else:
+            return
+    
+    """
     def id_person_show(self) -> None:
         if self.ui_journal.lineEditFindEmployeFio.text().strip():
             try:
@@ -1042,6 +1141,7 @@ class EmployeFIO:
                 self.ui_journal.lineEditFindEmployeFio.setText("")
         else:
             return
+    """
     
     def id_data_current_employe_fio(self) -> None:
         # self.id_person = self.ui_journal.comboBoxEmploye.currentData()

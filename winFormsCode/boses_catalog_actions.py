@@ -5,9 +5,9 @@ import time
 
 # сторонние
 from PyQt5 import QtWidgets, QtGui # QtGui создает объект цвета в PyQt5 с использованием компонентов RGB 
-from PyQt5.QtCore import Qt, QDate
-from PyQt5.QtWidgets import QMessageBox, QDesktopWidget, QLineEdit, QTableView, QAbstractItemView, QHeaderView
+from PyQt5.QtCore import Qt, QDate, QSortFilterProxyModel
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QMessageBox, QDesktopWidget, QLineEdit, QTableView, QAbstractItemView, QHeaderView
 
 # свои
 from winForms import Ui_BosesCatalogWindow
@@ -29,10 +29,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
         
         self.setSql = ""
         
-        """
-        self.ui_persons.btnFilterOn.clicked.connect(self.load_data_filter)  # Фильтрация
-        self.ui_persons.btnFilterOff.clicked.connect(self.load_data_no_filter)  # Отключить фильтрацию
-        """
+        self.ui_boses_catalog.lineEditFilter.textChanged.connect(self.on_filter_text_changed)  # Фильтрация
         
         self.ui_boses_catalog.btnInsert.clicked.connect(self.add_data_to_db)  # Добавить запись в таблицу
         self.ui_boses_catalog.btnUpdate.clicked.connect(self.update_data_in_db)  # Обновить запись в таблице
@@ -154,8 +151,8 @@ class BosesCatalog(QtWidgets.QMainWindow):
             # for col in range(2):
             #     model.item(row_idx, col).setTextAlignment(Qt.AlignCenter)
         
-        # 3. Привязываем модель к tableView
-        self.ui_boses_catalog.tableView.setModel(model)
+        # 3. Привязываем модель к tableView (если используем сортирвку - комментируем строку Привязываем модель в п. 11)
+        # self.ui_boses_catalog.tableView.setModel(model)
         
         # 4. Скрываем столбец data_id (индекс 0)
         self.ui_boses_catalog.tableView.setColumnHidden(0, True)
@@ -167,6 +164,33 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # 6. Опционально: автоматическая подгонка ширины столбцов под содержимое
         header = self.ui_boses_catalog.tableView.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        
+        #! ### Сортировка данных ###
+        # 7. Создаём прокси-модель и связываем
+        self.proxy_model = QSortFilterProxyModel(self)
+        self.proxy_model.setSourceModel(model)
+        
+        # 8. Настройка сортировки (по умолчанию сравнение строк, числа надо преобразовывать)
+        # Можно указать роль, по которой сортировать (обычно Qt.DisplayRole)
+        self.proxy_model.setSortRole(Qt.DisplayRole)
+        
+        # 9. Включаем динамическую сортировку (при изменении данных)
+        self.proxy_model.setDynamicSortFilter(True)
+        
+        # 10. Настройка фильтрации (поиск по столбцу "Ф.И.О.\nруководителя" - индекс 1)
+        self.proxy_model.setFilterKeyColumn(1)  # 1 - второй столбец
+        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)  # регистронезависимо
+        
+        # 11. Таблица для отображения Привязываем модель к tableView (Вместо пункта 3)
+        self.ui_boses_catalog.tableView.setModel(self.proxy_model)  # важно: подключаем прокси, а не исходную модель
+        
+        # 12. Включаем сортировку по клику на заголовок
+        self.ui_boses_catalog.tableView.setSortingEnabled(True)
+        #! #########################
+    
+    def on_filter_text_changed(self, text):
+        # Устанавливаем регулярное выражение для фильтрации (можно и строку)
+        self.proxy_model.setFilterRegExp(text)
     
     def add_data_to_db(self) -> None:
         """Добавление данных в базу данных"""
@@ -377,19 +401,8 @@ class BosesCatalog(QtWidgets.QMainWindow):
             return
         
         # TODO Ф.И.О.
-        value1 = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(current_row, 1))
-        self.ui_boses_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(current_row, 1))
+        self.ui_boses_catalog.lineEdit.setText(value)
         self.setSql = ""
     
     def cell_clicked(self, row, column) -> None:
@@ -399,19 +412,8 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # print("Row %d and Column %d was clicked" % (row, column))
         
         # TODO Ф.И.О.
-        value1 = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
-        self.ui_boses_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
+        self.ui_boses_catalog.lineEdit.setText(value)
     
     def on_cell_clicked(self, index):
         if index.isValid():
@@ -421,19 +423,8 @@ class BosesCatalog(QtWidgets.QMainWindow):
             # print("Клик по строке {row}, столбцу {column}, данные: {data}".format(row=row, column=column, data=data))
             
             # TODO Ф.И.О.
-            value1 = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
-            self.ui_boses_catalog.lineEdit.setText(value1)
-            """
-            # TODO Оценка цели
-            value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-            self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-            # TODO Желаемый возраст достижения цели
-            value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-            self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-            # TODO Имеющиеся накопления для достижения цели
-            value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-            self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-            """
+            value = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
+            self.ui_boses_catalog.lineEdit.setText(value)
     
     def on_cell_activated(self, index):
         """Данные в выбранной строке таблицы"""
@@ -444,20 +435,8 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # Данные: index.data() или модель.index(row, col).data()
         
         # TODO Ф.И.О.
-        value1 = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
-        self.ui_boses_catalog.lineEdit.setText(value1)
-        
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_boses_catalog.tableView.model().data(self.ui_boses_catalog.tableView.model().index(row, 1))
+        self.ui_boses_catalog.lineEdit.setText(value)
     
     def on_cell_pressed(index):
         """Slot для обработки нажатия"""
@@ -530,9 +509,6 @@ class TableModel:
                 "Ф.И.О.\nруководителя"
             ]
             model.setHorizontalHeaderLabels(headers)
-            
-            # 3. Присваиваем модель таблице
-            self.ui_boses_catalog.tableView.setModel(model)
             
             # 3. Присваиваем модель таблице
             self.ui_boses_catalog.tableView.setModel(model)
