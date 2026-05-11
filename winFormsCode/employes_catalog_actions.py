@@ -405,19 +405,8 @@ class EmployesCatalog(QtWidgets.QMainWindow):
             return
         
         # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(current_row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(current_row, 1))
+        self.ui_employes_catalog.lineEdit.setText(value)
         self.setSql = ""
     
     def cell_clicked(self, row, column) -> None:
@@ -427,19 +416,8 @@ class EmployesCatalog(QtWidgets.QMainWindow):
         # print("Row %d and Column %d was clicked" % (row, column))
         
         # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
+        self.ui_employes_catalog.lineEdit.setText(value)
     
     def on_cell_clicked(self, index):
         if index.isValid():
@@ -449,19 +427,8 @@ class EmployesCatalog(QtWidgets.QMainWindow):
             # print("Клик по строке {row}, столбцу {column}, данные: {data}".format(row=row, column=column, data=data))
             
             # TODO Ф.И.О.
-            value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-            self.ui_employes_catalog.lineEdit.setText(value1)
-            """
-            # TODO Оценка цели
-            value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-            self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-            # TODO Желаемый возраст достижения цели
-            value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-            self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-            # TODO Имеющиеся накопления для достижения цели
-            value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-            self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-            """
+            value = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
+            self.ui_employes_catalog.lineEdit.setText(value)
     
     def on_cell_activated(self, index):
         """Данные в выбранной строке таблицы"""
@@ -472,20 +439,8 @@ class EmployesCatalog(QtWidgets.QMainWindow):
         # Данные: index.data() или модель.index(row, col).data()
         
         # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        value = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
+        self.ui_employes_catalog.lineEdit.setText(value)
     
     def on_cell_pressed(index):
         """Slot для обработки нажатия"""
