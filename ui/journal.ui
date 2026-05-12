@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1059</width>
-    <height>607</height>
+    <width>1051</width>
+    <height>651</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1051</width>
+    <height>651</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1051</width>
+    <height>651</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -43,28 +55,28 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>441</width>
+      <width>381</width>
       <height>41</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEditFilter">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="lineEditFilterTask">
        <property name="maxLength">
         <number>25</number>
        </property>
        <property name="placeholderText">
-        <string>Фильтр...</string>
+        <string>Фильтр задания</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QComboBox" name="comboBoxDataFilter">
-       <property name="minimumSize">
-        <size>
-         <width>150</width>
-         <height>0</height>
-        </size>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEditFilterEmploye">
+       <property name="maxLength">
+        <number>25</number>
+       </property>
+       <property name="placeholderText">
+        <string>Фильтр исполнителя</string>
        </property>
       </widget>
      </item>
@@ -79,13 +91,19 @@
       <x>690</x>
       <y>60</y>
       <width>351</width>
-      <height>481</height>
+      <height>531</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
       <width>0</width>
-      <height>481</height>
+      <height>531</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>531</height>
      </size>
     </property>
     <property name="title">
@@ -97,22 +115,16 @@
        <x>10</x>
        <y>30</y>
        <width>331</width>
-       <height>435</height>
+       <height>484</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_2">
+      <item row="8" column="2">
+       <widget class="QCheckBox" name="checkBox_2">
         <property name="text">
-         <string>Исполнитель</string>
+         <string/>
         </property>
        </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QPlainTextEdit" name="plainTextEditTask"/>
-      </item>
-      <item row="5" column="1">
-       <widget class="QPlainTextEdit" name="plainTextEditNote"/>
       </item>
       <item row="7" column="0">
        <widget class="QLabel" name="label_6">
@@ -132,40 +144,14 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEditFindBossFio"/>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Завершение
-выполнения</string>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineEditFindBossFio">
+        <property name="placeholderText">
+         <string>Поиск руководителя</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="1">
-       <widget class="QCheckBox" name="checkBox">
-        <property name="text">
-         <string>Выполнено</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Начало
-выполнения</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Задание</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Руководитель</string>
@@ -179,18 +165,12 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEditFindEmployeFio"/>
-      </item>
       <item row="7" column="1">
        <widget class="QDateEdit" name="dateEditEnd">
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
        </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="comboBoxEmploye"/>
       </item>
       <item row="6" column="1">
        <widget class="QDateEdit" name="dateEditStart">
@@ -199,13 +179,59 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="comboBoxBoss"/>
       </item>
-      <item row="8" column="2">
-       <widget class="QCheckBox" name="checkBox_2">
+      <item row="4" column="1">
+       <widget class="QPlainTextEdit" name="plainTextEditTask"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string/>
+         <string>Завершение
+выполнения</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Задание</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Исполнитель</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPlainTextEdit" name="plainTextEditNote"/>
+      </item>
+      <item row="9" column="1">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Выполнено</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxEmploye"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Начало
+выполнения</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEditFindEmployeFio">
+        <property name="placeholderText">
+         <string>Поиск исполнителя</string>
         </property>
        </widget>
       </item>
@@ -215,8 +241,8 @@
    <widget class="QComboBox" name="comboBoxSort">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>20</y>
+      <x>440</x>
+      <y>620</y>
       <width>191</width>
       <height>25</height>
      </rect>
@@ -252,7 +278,7 @@
     <property name="geometry">
      <rect>
       <x>700</x>
-      <y>550</y>
+      <y>600</y>
       <width>241</width>
       <height>41</height>
      </rect>
@@ -365,6 +391,22 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QComboBox" name="comboBoxDataFilter">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>620</y>
+      <width>150</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>150</width>
+      <height>0</height>
+     </size>
+    </property>
    </widget>
   </widget>
  </widget>

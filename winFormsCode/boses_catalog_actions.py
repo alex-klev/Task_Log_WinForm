@@ -177,7 +177,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # 9. Включаем динамическую сортировку (при изменении данных)
         self.proxy_model.setDynamicSortFilter(True)
         
-        # 10. Настройка фильтрации (поиск по столбцу "Ф.И.О.\nруководителя" - индекс 1)
+        # 10. Настройка фильтрации (поиск по столбцу "Ф.И.О. руководителя" - индекс 1)
         self.proxy_model.setFilterKeyColumn(1)  # 1 - второй столбец
         self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)  # регистронезависимо
         

@@ -374,13 +374,13 @@ class JournalDb:
                             -- IIF(j.time_end_task = '00:00','нет данных', strftime('%H:%M', j.time_end_task)) AS time_end_task,
                             IFNULL(j.time_end_task, '-') AS time_end_task,
                             -- COALESCE(j.time_end_task, 'нет данных') AS time_end_task,
-                            rb.fio AS boss_fio,
                             re.fio AS employee_fio,
-                            ROUND(julianday(j.date_end_task) - julianday(date('now', 'localtime')), 0) AS days_difference,
-                            -- CEIL(julianday(j.date_end_task) - julianday(date('now', 'localtime'))) AS days_difference,
+                            rb.fio AS boss_fio,
+                            CAST(ROUND(julianday(j.date_end_task) - julianday(date('now', 'localtime')), 0) AS INTEGER) AS days_difference,
+                            -- CAST(CEIL(julianday(j.date_end_task) - julianday(date('now', 'localtime'))) AS INTEGER) AS days_difference,
                             j.done,
-                            j.boss_id,
-                            j.employee_id
+                            j.employee_id,
+                            j.boss_id
                         FROM journal j
                         LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
                         LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
@@ -406,7 +406,7 @@ class JournalDb:
                 return data
     
     def load_data_bosses(self):
-        """Загружаем данные из таблицы"""
+        """Загружаем данные руководителей из таблицы"""
         with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
             # Получаем курсор
             cursor = conn.cursor()
@@ -432,7 +432,7 @@ class JournalDb:
                 return data
     
     def load_data_employes(self):
-        """Загружаем данные из таблицы"""
+        """Загружаем данные исполнителей из таблицы"""
         with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
             # Получаем курсор
             cursor = conn.cursor()
@@ -468,7 +468,7 @@ class JournalDb:
                 # execute принимает в качестве параметров кортеж. Запятая нужна после data
                 # cursor.execute("INSERT INTO table_name (abcd) VALUES(?)", (data,))       
                 
-                # Вставляем новую запись в таблицу reference_employes
+                # Вставляем новую запись в таблицу
                 cursor.execute(
                     """INSERT INTO journal (
                         data_id, 
@@ -500,42 +500,7 @@ class JournalDb:
             conn.execute("PRAGMA foreign_keys = ON;")
             
             try:
-                # execute принимает в качестве параметров кортеж. Запятая нужна после data
-                # cursor.execute("INSERT INTO table_name (abcd) VALUES(?)", (data,))       
-                
-                # Вставляем новую запись в таблицу reference_employes
-                cursor.execute(
-                    """INSERT INTO journal (
-                        data_id, 
-                        boss_id, 
-                        employee_id, 
-                        task, 
-                        note, 
-                        date_start_task, 
-                        date_end_task, 
-                        time_end_task, 
-                        done, 
-                        current_datetime
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        self.data_id, self.boss_id, self.employee_id, self.task, self.note, 
-                        self.date_start_task, self.date_end_task, self.time_end_task, self.done, self.current_datetime
-                    ))
-            except sl.Error as err:
-                print("Ошибка при работе с базой данных ", err)
-            else:
-                # Выполняем транзакцию
-                conn.commit()
-    
-    def update_data(self) -> None:
-        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
-            # Получаем курсор
-            cursor = conn.cursor()
-            # Включение поддержки внешних ключей
-            conn.execute("PRAGMA foreign_keys = ON;")
-            
-            try:
-                # Обновляем запись в таблице assets
+                # Обновляем запись в таблице
                 cursor.execute(
                     """UPDATE journal SET 
                             boss_id = ?, 
@@ -553,6 +518,22 @@ class JournalDb:
                             self.date_start_task, self.date_end_task, self.time_end_task, self.done, self.current_datetime,
                             self.data_id
                         ))
+            except sl.Error as err:
+                print("Ошибка при работе с базой данных ", err)
+            else:
+                # Выполняем транзакцию
+                conn.commit()
+    
+    def delete_data(self) -> None:
+        with sl.connect(os.path.join("db", "TaskLogDb.db")) as conn:
+            # Получаем курсор
+            cursor = conn.cursor()
+            # Включение поддержки внешних ключей
+            conn.execute("PRAGMA foreign_keys = ON;")
+            
+            try:
+                # Удаляем запись в таблице
+                cursor.execute("DELETE FROM Journal WHERE data_id = ?", (self.data_id,))
             except sl.Error as err:
                 print("Ошибка при работе с базой данных ", err)
             else:
