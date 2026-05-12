@@ -5,7 +5,7 @@ import time
 
 # сторонние
 from PyQt5 import QtWidgets, QtGui # QtGui создает объект цвета в PyQt5 с использованием компонентов RGB 
-from PyQt5.QtCore import Qt, QDate, QTime
+from PyQt5.QtCore import Qt, QDate, QTime, QSortFilterProxyModel
 from PyQt5.QtWidgets import QMessageBox, QDesktopWidget, QLineEdit, QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
@@ -32,28 +32,27 @@ class Journal(QtWidgets.QMainWindow):
         self.ui_journal.groupBoxElements.setEnabled(False)
         # self.ui_journal.groupBoxElements.enabled = False
         
-        """
-        self.ui_persons.btnFilterOn.clicked.connect(self.load_data_filter)  # Фильтрация
-        self.ui_persons.btnFilterOff.clicked.connect(self.load_data_no_filter)  # Отключить фильтрацию
-        """
-        
+        self.ui_journal.lineEditFilterTask.textChanged.connect(self.on_filter_text_changed_task)  # Фильтрация
+        self.ui_journal.lineEditFilterEmploye.textChanged.connect(self.on_filter_text_changed_employe)  # Фильтрация
         
         self.ui_journal.btnInsert.clicked.connect(self.add_data_to_db)  # Добавить запись в таблицу
         self.ui_journal.btnUpdate.clicked.connect(self.update_data_in_db)  # Обновить запись в таблице
-        
-        #self.ui_journal.btnDelete.clicked.connect(self.delete_data_from_db)  # Удалить запись из таблицы
+        self.ui_journal.btnDelete.clicked.connect(self.delete_data_from_db)  # Удалить запись из таблицы
         self.ui_journal.btnSave.clicked.connect(self.save_data_in_db)  # Сохранить запись в таблице
         self.ui_journal.btnCancel.clicked.connect(self.cancel)  # Отменить запись из таблицы
-        """
+        
         self.ui_journal.tableView.clicked.connect(self.on_cell_clicked)  # Клик по ячейке
         self.ui_journal.tableView.activated.connect(self.on_cell_activated)  # Данные в выбранной строке таблицы
         # self.ui_journal.tableView.pressed.connect(self.on_cell_pressed)  # Данные в выбранной строке таблицы
-        
+        """
         self.ui_journal.lineEdit.setEnabled(False)
         """
         
         self.ui_journal.plainTextEditTask.textChanged.connect(self.limit_text_edit_task)
         self.ui_journal.plainTextEditNote.textChanged.connect(self.limit_text_edit_note)
+        
+        self.ui_journal.checkBox_2.toggled.connect(self.check_time)
+        # self.ui_journal.checkBox_2.clicked.connect(self.check_time)
         
         #! ### Ф.И.О. руководителя ###
         # Создаём объект BossFIO один раз (данные загрузятся внутри)
@@ -70,9 +69,6 @@ class Journal(QtWidgets.QMainWindow):
         self.ui_journal.lineEditFindEmployeFio.editingFinished.connect(self.employe_fio.id_person_show)
         self.ui_journal.comboBoxEmploye.setCurrentText("нет данных")
         #! ###########################
-        
-        
-        
         
         # Создаём модель таблицы
         table_model = TableModel(
@@ -159,12 +155,12 @@ class Journal(QtWidgets.QMainWindow):
                         'date_start_task': row[3],
                         'date_end_task': row[4],
                         'time_end_task': row[5],
-                        'boss_fio': row[6],
-                        'employee_fio': row[7],
+                        'employee_fio': row[6],
+                        'boss_fio': row[7],
                         'days_difference': row[8],
                         'done': row[9],
-                        "boss_id": row[10],
-                        "employee_id": row[11]
+                        "employee_id": row[10],
+                        "boss_id": row[11]
                     }
                 
                 # Используем генераторное выражение
@@ -185,21 +181,21 @@ class Journal(QtWidgets.QMainWindow):
             self.ui_journal.tableView.setModel(None)
             return
         
-        # 1. Создаём модель: строки = кол-во записей, столбцы = 10
-        model = QStandardItemModel(len(data), 10)
+        # 1. Создаём модель: строки = кол-во записей, столбцы = 12
+        model = QStandardItemModel(len(data), 12)
         model.setHorizontalHeaderLabels([
             "data_id", 
             "Задание", 
             "Примечание", 
-            "Начало\nвыполнения", 
-            "Завершение\nвыполнения",
-            "Завершить к",
-            "Руководитель", 
-            "Исполнитель", 
+            "Дата\nначала", 
+            "Дата\nзавершения",
+            "Время\nзавершения",
+            "Исполнитель",
+            "Руководитель",
             "days_difference",
             "done",
-            "boss_id",
-            "employee_id"
+            "employee_id",
+            "boss_id"
         ])
         
         # 2. Заполняем модель данными
@@ -207,16 +203,16 @@ class Journal(QtWidgets.QMainWindow):
             # data_id (скрытый)
             model.setItem(row_idx, 0, QStandardItem(str(row_data.get('data_id', ''))))
             
-            days_diff = str(row_data.get('days_difference', '0'))  # Берем значение Дни до завершения задачи (days_difference)
+            days_diff = str(row_data.get('days_difference', '0.0'))  # Берем значение Дни до завершения задачи (days_difference)
             done = str(row_data.get('done', '0'))  # Берем значение Отметка о завершении
             
             item_task = QStandardItem(str(row_data.get('task', '')))  # Задание
             item_note = QStandardItem(str(row_data.get('note', '')))  # Примечание
-            item_date_start_task = QStandardItem(str(row_data.get('date_start_task', '')))  # Начало выполнения
-            item_date_end_task = QStandardItem(str(row_data.get('date_end_task', '')))  # Завершение выполнения
-            item_time_end_task = QStandardItem(str(row_data.get('time_end_task', '')))  # Завершить к
-            item_boss_fio = QStandardItem(str(row_data.get('boss_fio', '')))  # Руководитель
+            item_date_start_task = QStandardItem(str(row_data.get('date_start_task', '')))  # Дата начала
+            item_date_end_task = QStandardItem(str(row_data.get('date_end_task', '')))  # Дата завершения
+            item_time_end_task = QStandardItem(str(row_data.get('time_end_task', '')))  # Время завершения
             item_employee_fio = QStandardItem(str(row_data.get('employee_fio', '')))  # Исполнитель
+            item_boss_fio = QStandardItem(str(row_data.get('boss_fio', '')))  # Руководитель
             
             if (8.0 <= float(days_diff) <= 14.0) and (int(done) == 0):
                 item_task.setForeground(QtGui.QColor("darkorange"))
@@ -262,25 +258,25 @@ class Journal(QtWidgets.QMainWindow):
             # model.setItem(row_idx, 2, QStandardItem(str(row_data.get('note', ''))))
             model.setItem(row_idx, 2, item_note)
             
-            # Начало выполнения
+            # Дата начала
             # model.setItem(row_idx, 3, QStandardItem(str(row_data.get('date_start_task', ''))))
             model.setItem(row_idx, 3, item_date_start_task)
             
-            # Завершение выполнения
+            # Дата завершения
             # model.setItem(row_idx, 4, QStandardItem(str(row_data.get('date_end_task', ''))))
             model.setItem(row_idx, 4, item_date_end_task)
             
-            # Завершить к
+            # Время завершения
             # model.setItem(row_idx, 5, QStandardItem(str(row_data.get('time_end_task', ''))))
             model.setItem(row_idx, 5, item_time_end_task)
             
-            # Руководитель
-            # model.setItem(row_idx, 6, QStandardItem(str(row_data.get('boss_fio', ''))))
-            model.setItem(row_idx, 6, item_boss_fio)
-            
             # Исполнитель
-            # model.setItem(row_idx, 7, QStandardItem(str(row_data.get('employee_fio', ''))))
-            model.setItem(row_idx, 7, item_employee_fio)
+            # model.setItem(row_idx, 6, QStandardItem(str(row_data.get('employee_fio', ''))))
+            model.setItem(row_idx, 6, item_employee_fio)
+            
+            # Руководитель
+            # model.setItem(row_idx, 7, QStandardItem(str(row_data.get('boss_fio', ''))))
+            model.setItem(row_idx, 7, item_boss_fio)
             
             # Дни до завершения задачи (days_difference)
             # model.setItem(row_idx, 8, QStandardItem(str(row_data.get('days_difference', ''))))
@@ -290,11 +286,11 @@ class Journal(QtWidgets.QMainWindow):
             # model.setItem(row_idx, 9, QStandardItem(str(row_data.get('done', ''))))
             model.setItem(row_idx, 9, QStandardItem(done))
             
-            # boss_id
-            model.setItem(row_idx, 10, QStandardItem(str(row_data.get('boss_id', ''))))
-            
             # employee_id
-            model.setItem(row_idx, 11, QStandardItem(str(row_data.get('employee_id', ''))))
+            model.setItem(row_idx, 10, QStandardItem(str(row_data.get('employee_id', ''))))
+            
+            # boss_id
+            model.setItem(row_idx, 11, QStandardItem(str(row_data.get('boss_id', ''))))
             
             """
             # Сумма (с условным форматированием)
@@ -318,10 +314,10 @@ class Journal(QtWidgets.QMainWindow):
             for col in range(12):
                 model.item(row_idx, col).setTextAlignment(Qt.AlignCenter)
         
-        # 3. Привязываем модель к tableView
-        self.ui_journal.tableView.setModel(model)
+        # 3. Привязываем модель к tableView (если используем сортирвку - комментируем строку Привязываем модель в п. 10)
+        # self.ui_journal.tableView.setModel(model)
         
-        # 4. Скрываем столбцы data_id (индекс 0), days_difference (индекс 8), done (индекс 9), boss_id (индекс 10), employee_id (индекс 11)
+        # 4. Скрываем столбцы data_id (индекс 0), days_difference (индекс 8), done (индекс 9), employee_id (индекс 10), boss_id (индекс 11)
         self.ui_journal.tableView.setColumnHidden(0, True)
         self.ui_journal.tableView.setColumnHidden(8, True)
         self.ui_journal.tableView.setColumnHidden(9, True)
@@ -335,12 +331,41 @@ class Journal(QtWidgets.QMainWindow):
         # 6. Опционально: автоматическая подгонка ширины столбцов под содержимое
         header = self.ui_journal.tableView.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        
+        #! ### Сортировка данных ###
+        # 7. Создаём прокси-модель и связываем
+        self.proxy_model = MultiColumnFilterProxyModel(self)
+        self.proxy_model.setSourceModel(model)
+        
+        # 8. Настройка сортировки (по умолчанию сравнение строк, числа надо преобразовывать)
+        # Можно указать роль, по которой сортировать (обычно Qt.DisplayRole)
+        self.proxy_model.setSortRole(Qt.DisplayRole)
+        
+        # 9. Включаем динамическую сортировку (при изменении данных)
+        self.proxy_model.setDynamicSortFilter(True)
+        
+        # 10. Таблица для отображения Привязываем модель к tableView (Вместо пункта 3)
+        self.ui_journal.tableView.setModel(self.proxy_model)  # важно: подключаем прокси, а не исходную модель
+        
+        # 11. Включаем сортировку по клику на заголовок (может сбиваться сортировка)
+        # self.ui_journal.tableView.setSortingEnabled(True)
+        #! #########################
     
+    def on_filter_text_changed_task(self, text):
+        """Фильтрация по заданию"""
+        if text:
+            self.proxy_model.setFilterForColumn(1, text)  # фильтр по заданию
+        else:
+            self.proxy_model.setFilterForColumn(1, "")  # фильтр по заданию
     
+    def on_filter_text_changed_employe(self, text):
+        """Фильтрация по исполнителю"""
+        if text:
+            self.proxy_model.setFilterForColumn(6, text)  # фильтр по исполнителю
+        else:
+            self.proxy_model.setFilterForColumn(6, "")  # фильтр по исполнителю
     
-    
-    
-    # TODO Добавление данных ###
+    # TODO Добавление записи
     def add_data_to_db(self) -> None:
         """Добавление данных в базу данных"""
         # Установка фокуса на поле задание
@@ -353,7 +378,7 @@ class Journal(QtWidgets.QMainWindow):
         self.setSql = "Insert"
         # print(self.setSql)
     
-    # TODO Изменение данных ###
+    # TODO Изменение записи
     def update_data_in_db(self) -> None:
         """Изменение данных в базе данных"""
         # Выбранная строка
@@ -365,7 +390,7 @@ class Journal(QtWidgets.QMainWindow):
             return
         else:
             # Синхронизация значения полей со значением в таблице
-            # self.cell_clicked(current_row, 0)
+            self.cell_clicked(current_row, 0)
             # Установка фокуса на поле задание
             self.ui_journal.plainTextEditTask.setFocus(True)
             # Активация / деактивация элементов
@@ -374,11 +399,92 @@ class Journal(QtWidgets.QMainWindow):
             self.setSql = "Update"
             # print(self.setSql)
     
+    # TODO Удаление записи
+    def delete_data_from_db(self) -> None:
+        """Удаление данных из базы данных"""
+        # Выбранная строка
+        current_row = self.ui_journal.tableView.currentIndex().row()
+        
+        # if current_row < 0:
+        if current_row == -1:
+            QMessageBox.warning(self, "Внимание", "Выберите запись для удаления")
+            return
+        
+        # Синхронизация значения полей со значением в таблице
+        self.cell_clicked(current_row, 0)
+        
+        """
+        delete = QMessageBox.warning(self,
+                                      "Удаление записи из таблицы",
+                                      'Удаление записи приведёт к потере всех связанных данных.\n'
+                                      'Вы хотите удалить запись "{0}" ?'.format(
+                                          self.ui_personal_plan.tableAdditionalGoals.item(current_row, 1).text()),
+                                      QMessageBox.Yes | QMessageBox.No)
+        
+        if delete == QMessageBox.Yes:
+        """
+        
+        # Создаем диалог вручную, а не через статический метод
+        msg_box = QtWidgets.QMessageBox()
+        
+        msg_box.setWindowTitle("Удаление записи")
+        msg_box.setText("Вы уверены, что хотите удалить запись '{0}' ?".format(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(current_row, 1))))
+        
+        msg_box.setIcon(QtWidgets.QMessageBox.Question)
+        msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        
+        # Устанавливаем ту же иконку, что и у главного окна
+        if self.windowIcon() and not self.windowIcon().isNull():
+            msg_box.setWindowIcon(self.windowIcon())
+        
+        # Меняем текст кнопок ДО показа диалога
+        msg_box.button(QtWidgets.QMessageBox.Yes).setText("Да")
+        msg_box.button(QtWidgets.QMessageBox.No).setText("Нет")
+        
+        # Показываем диалог и получаем результат
+        result = msg_box.exec_()
+        
+        if result == QtWidgets.QMessageBox.Yes:
+            # Выбор режима
+            self.setSql = "Delete"
+            self.command_delete()
+            # Заполнение таблицы
+            self.load_data_db()
+            # Очистка полей
+            self.clear_line_edit()
+            # Сброс режима SQL
+            self.setSql = ""
     
+    def command_delete(self):
+        """команда на удаление записей"""
+        current_row = self.ui_journal.tableView.currentIndex().row()
+        
+        # if current_row < 0:
+        if current_row == -1:
+            return
+            
+        data_id = self.ui_journal.tableView.model().index(current_row, 0).data()  # data.get('data_id') # id записи, присвоенная в таблице на стороне клиента (Date.now().toString() дата в виде текста)
+        # print(data_id)
+        
+        if data_id:
+            try:
+                journal = JournalDb(
+                    p0=data_id
+                )
+                journal.delete_data()
+            except Exception as e:
+                txt = self.ui_journal.plainTextEditTask.toPlainText().strip()
+                QMessageBox.warning(self, 'Внимание', "Ошибка {e} при удалении записи {txt}".format(txt=txt, e=e))
+                return
+            else:
+                pass
+                # return jsonify({'status': 'success'})
+        else:
+            txt = self.ui_journal.plainTextEditTask.toPlainText().strip()
+            QMessageBox.warning(self, 'Внимание', "Отсутсвует id для удалении записи {txt} {e}".format(txt=txt, e=e))
+            return
     
-    
-    
-    
+    # TODO Сохранение записи
     def save_data_in_db(self) -> None:
         """Активация / деактивация кнопок"""
         # Установка фокуса на поле задание
@@ -389,8 +495,8 @@ class Journal(QtWidgets.QMainWindow):
             data_id = str(int(time.time() * 1000))  # data.get('data_id') # id записи, присвоенная в таблице на стороне клиента (Date.now().toString() дата в виде текста)
             boss_fio = self.ui_journal.comboBoxBoss.currentData()  # Ф.И.О. руководителя
             employe_fio = self.ui_journal.comboBoxEmploye.currentData()  # Ф.И.О. исполнителя
-            task = self.ui_journal.plainTextEditTask.toPlainText()  # задание
-            note = self.ui_journal.plainTextEditNote.toPlainText()  # примечание
+            task = self.ui_journal.plainTextEditTask.toPlainText().strip()  # задание
+            note = self.ui_journal.plainTextEditNote.toPlainText().strip()  # примечание
             date_start = self.ui_journal.dateEditStart.date().toPyDate()  # дата начала задачи
             date_end = self.ui_journal.dateEditEnd.date().toPyDate()  # дата окончания задачи
             
@@ -404,20 +510,20 @@ class Journal(QtWidgets.QMainWindow):
             else:
                 done = 0
             
-            if boss_fio == 1:
-                QMessageBox.warning(self, "Внимание", "Не указан руководитель")
-                self.ui_journal.comboBoxBoss.setFocus()
-                return
-            elif employe_fio == 1:
+            if employe_fio == 1:
                 QMessageBox.warning(self, "Внимание", "Не указан исполнитель")
-                self.ui_journal.comboBoxEmploye.setFocus()
+                self.ui_journal.lineEditFindEmployeFio.setFocus()
+                return
+            elif boss_fio == 1:
+                QMessageBox.warning(self, "Внимание", "Не указан руководитель")
+                self.ui_journal.lineEditFindBossFio.setFocus()
                 return
             elif task.strip() == "":
                 QMessageBox.warning(self, "Внимание", "Задание не указано")
                 self.ui_journal.plainTextEditTask.setFocus()
                 return
             elif date_start > date_end:
-                QMessageBox.warning(self, "Внимание", "Дата начала не может быть позже даты окончания")
+                QMessageBox.warning(self, "Внимание", "Дата начала не может быть позже даты завершения")
                 self.ui_journal.dateEditStart.setFocus()
                 return
             else:
@@ -449,8 +555,8 @@ class Journal(QtWidgets.QMainWindow):
             data_id = self.ui_journal.tableView.model().index(current_row, 0).data()  # data.get('data_id') # id записи, присвоенная в таблице на стороне клиента (Date.now().toString() дата в виде текста)
             boss_fio = self.ui_journal.comboBoxBoss.currentData()  # Ф.И.О. руководителя
             employe_fio = self.ui_journal.comboBoxEmploye.currentData()  # Ф.И.О. исполнителя
-            task = self.ui_journal.plainTextEditTask.toPlainText()  # задание
-            note = self.ui_journal.plainTextEditNote.toPlainText()  # примечание
+            task = self.ui_journal.plainTextEditTask.toPlainText().strip()  # задание
+            note = self.ui_journal.plainTextEditNote.toPlainText().strip()  # примечание
             date_start = self.ui_journal.dateEditStart.date().toPyDate()  # дата начала задачи
             date_end = self.ui_journal.dateEditEnd.date().toPyDate()  # дата окончания задачи
             
@@ -464,12 +570,20 @@ class Journal(QtWidgets.QMainWindow):
             else:
                 done = 0
             
-            if task.strip() == "":
+            if employe_fio == 1:
+                QMessageBox.warning(self, "Внимание", "Не указан исполнитель")
+                self.ui_journal.lineEditFindEmployeFio.setFocus()
+                return
+            elif boss_fio == 1:
+                QMessageBox.warning(self, "Внимание", "Не указан руководитель")
+                self.ui_journal.lineEditFindBossFio.setFocus()
+                return
+            elif task.strip() == "":
                 QMessageBox.warning(self, "Внимание", "Задание не указано")
                 self.ui_journal.plainTextEditTask.setFocus()
                 return
             elif date_start > date_end:
-                QMessageBox.warning(self, "Внимание", "Дата начала не может быть позже даты окончания")
+                QMessageBox.warning(self, "Внимание", "Дата начала не может быть позже даты завершения")
                 self.ui_journal.dateEditStart.setFocus()
                 return
             else:
@@ -498,7 +612,7 @@ class Journal(QtWidgets.QMainWindow):
         # Сброс режима SQL
         self.setSql = ""
     
-    # TODO Отмена ###
+    # TODO Отмена
     def cancel(self) -> None:
         """Отмена действия"""
         # Очистка полей
@@ -514,225 +628,38 @@ class Journal(QtWidgets.QMainWindow):
         if current_row == -1:
             return
         
-        # TODO Ф.И.О.
-        # value1 = self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(current_row, 1))
-        # self.ui_journal.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(current_row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        self.value_elements(current_row)
         self.setSql = ""
     
-    
     def limit_text_edit_task(self):
+        """Установка ограничения количества символов"""
         text = self.ui_journal.plainTextEditTask.toPlainText()
         max_chars = 50
         if len(text) > max_chars:
+            # Отключаем сигнал, чтобы избежать рекурсии при программной замене
             self.ui_journal.plainTextEditTask.blockSignals(True)
             self.ui_journal.plainTextEditTask.setPlainText(text[:max_chars])
             self.ui_journal.plainTextEditTask.blockSignals(False)
+            
+            # Перемещаем курсор в конец (иначе он останется в начале)
+            cursor = self.ui_journal.plainTextEditTask.textCursor()
+            cursor.movePosition(cursor.End)
+            self.ui_journal.plainTextEditTask.setTextCursor(cursor)
     
     def limit_text_edit_note(self):
+        """Установка ограничения количества символов"""
         text = self.ui_journal.plainTextEditNote.toPlainText()
         max_chars = 50
         if len(text) > max_chars:
+            # Отключаем сигнал, чтобы избежать рекурсии при программной замене
             self.ui_journal.plainTextEditNote.blockSignals(True)
             self.ui_journal.plainTextEditNote.setPlainText(text[:max_chars])
             self.ui_journal.plainTextEditNote.blockSignals(False)
-    
-    
-    
-    def cell_clicked(self, row=None, column=None) -> None:
-        """Данные в выбранной строке таблицы"""
-        # row - принимает координаты строки
-        # column - принимает координаты столбца
-        # print("Row %d and Column %d was clicked" % (row, column))
-        
-        """
-        # Пример
-        comboBox.addItem("Красный", "red")    # данные = "red"
-        comboBox.addItem("Зеленый", "green")  # данные = "green"
-        comboBox.addItem("Синий", "blue")     # данные = "blue"
-        
-        # Поиск
-        index = comboBox.findData("green")    # вернет 1
-        index = comboBox.findData("yellow")   # вернет -1 (не найдено)
-        
-        # Поиск
-        index = comboBox.findText("Зеленый")   # вернет 1
-        index = comboBox.findText("зеленый")   # вернет -1 (регистр важен!)
-        index = comboBox.findText("Зеленый", Qt.MatchFlag.MatchContains)  # частичное совпадение
-        
-        # Флаги для findText
-        comboBox.findText("зел", Qt.MatchFlag.MatchStartsWith)     # начинается с "зел"
-        comboBox.findText("ен", Qt.MatchFlag.MatchContains)        # содержит "ен"
-        comboBox.findText("ЗЕЛЕНЫЙ", Qt.MatchFlag.MatchCaseSensitive)  # с учетом регистра
-        
-        # Флаги для findData (обычно используется только точное совпадение)
-        comboBox.findData("green", Qt.MatchFlag.MatchExactly)      # точное совпадение
-        """
-        
-        # TODO Тип цели
-        # Получаем значение из таблицы ('income' или 'expense')
-        if row is not None:
-            value = self.ui_budget_by_categories.tableLastOperations.item(row, 4).text()
-        else:
-            value = self.ui_budget_by_categories.tableLastOperations.item(self.row, 4).text()
-        
-        # Находим индекс элемента с нужным значением data
-        index = self.ui_budget_by_categories.comboBoxIncExpBudget.findData(value)
-        
-        # Устанавливаем найденный индекс (если найден)
-        if index >= 0:
-            # self.ui_budget_by_categories.comboBoxIncExpBudget.setCurrentIndex(index)
-            self.data_IncExpBudget = index
-        
-        # TODO Сумма
-        # self.ui_budget_by_categories.doubleSpinBoxSumBudget.setValue(abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', ''))))
-        if row is not None:
-            self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', '')))
-        else:
-            self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(self.row, 3).text().replace(' ', '')))
-        
-        # TODO Категория
-        # self.ui_budget_by_categories.lineEditCategoryBudget.setText(self.ui_budget_by_categories.tableLastOperations.item(row, 2).text())
-        if row is not None:
-            self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(row, 2).text()
-        else:
-            self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(self.row, 2).text()
-        
-        # TODO Дата
-        if row is not None:
-            slist = self.ui_budget_by_categories.tableLastOperations.item(row, 1).text().split(".")
-        else:
-            slist = self.ui_budget_by_categories.tableLastOperations.item(self.row, 1).text().split(".")
-        sdate = dt.date(int(slist[2]), int(slist[1]), int(slist[0]))
-        # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(sdate))
-        self.data_DateBudget = sdate
-        # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(2023, 7, 25))
-        
-        """
-        print(self.ui_budget_by_categories.tableLastOperations.item(row, 0).text())
-        print(self.ui_budget_by_categories.tableLastOperations.item(row, 1).text())
-        print(self.ui_budget_by_categories.tableLastOperations.item(row, 2).text())
-        print(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text())
-        print(self.ui_budget_by_categories.tableLastOperations.item(row, 4).text())
-        """
-    
-    def cell_activated(self, row=None, column=None) -> None:
-        """Данные в выбранной строке таблицы"""
-        # row - принимает координаты строки
-        # column - принимает координаты столбца
-        # print("Row %d and Column %d was clicked" % (row, column))
-        
-        # TODO Тип цели
-        # Получаем значение из таблицы ('income' или 'expense')
-        if row is not None:
-            value = self.ui_budget_by_categories.tableLastOperations.item(row, 4).text()
-        else:
-            value = self.ui_budget_by_categories.tableLastOperations.item(self.row, 4).text()
-        
-        # Находим индекс элемента с нужным значением data
-        index = self.ui_budget_by_categories.comboBoxIncExpBudget.findData(value)
-        
-        # Устанавливаем найденный индекс (если найден)
-        if index >= 0:
-            # self.ui_budget_by_categories.comboBoxIncExpBudget.setCurrentIndex(index)
-            self.data_IncExpBudget = index
-        
-        # TODO Сумма
-        # self.ui_budget_by_categories.doubleSpinBoxSumBudget.setValue(abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', ''))))
-        if row is not None:
-            self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', '')))
-        else:
-            self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(self.row, 3).text().replace(' ', '')))
-        
-        # TODO Категория
-        if row is not None:
-            self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(row, 2).text()
-        else:
-            self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(self.row, 2).text()
-        
-        # TODO Дата
-        if row is not None:
-            slist = self.ui_budget_by_categories.tableLastOperations.item(row, 1).text().split(".")
-        else:
-            slist = self.ui_budget_by_categories.tableLastOperations.item(self.row, 1).text().split(".")
-        sdate = dt.date(int(slist[2]), int(slist[1]), int(slist[0]))
-        # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(sdate))
-        self.data_DateBudget = sdate
-        # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(2023, 7, 25))
-    
-    def cell_changed_table_last_operations(self, row=None, column=None) -> None:
-        """Данные в выбранной строке таблицы"""
-        # row - принимает координаты строки
-        # column - принимает координаты столбца
-        # print("Row %d and Column %d was clicked" % (row, column))
-        
-        # Без try возникает ошибка при удалении единственной (последней) записи из таблицы
-        try:
-            # TODO Тип цели
-            # Получаем значение из таблицы ('income' или 'expense')
-            if row is not None:
-                value = self.ui_budget_by_categories.tableLastOperations.item(row, 4).text()
-            else:
-                value = self.ui_budget_by_categories.tableLastOperations.item(self.row, 4).text()
             
-            # Находим индекс элемента с нужным значением data
-            index = self.ui_budget_by_categories.comboBoxIncExpBudget.findData(value)
-            
-            # Устанавливаем найденный индекс (если найден)
-            if index >= 0:
-                # self.ui_budget_by_categories.comboBoxIncExpBudget.setCurrentIndex(index)
-                self.data_IncExpBudget = index
-            
-            # TODO Сумма
-            # self.ui_budget_by_categories.doubleSpinBoxSumBudget.setValue(abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', ''))))
-            if row is not None:
-                self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(row, 3).text().replace(' ', '')))
-            else:
-                self.data_SumBudget = abs(float(self.ui_budget_by_categories.tableLastOperations.item(self.row, 3).text().replace(' ', '')))
-            
-            # TODO Категория
-            # self.ui_budget_by_categories.lineEditCategoryBudget.setText(self.ui_budget_by_categories.tableLastOperations.item(row, 2).text())
-            if row is not None:
-                self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(row, 2).text()
-            else:
-                self.data_CategoryBudget = self.ui_budget_by_categories.tableLastOperations.item(self.row, 2).text()
-            
-            # TODO Дата
-            if row is not None:
-                slist = self.ui_budget_by_categories.tableLastOperations.item(row, 1).text().split(".")
-            else:
-                slist = self.ui_budget_by_categories.tableLastOperations.item(self.row, 1).text().split(".")
-            sdate = dt.date(int(slist[2]), int(slist[1]), int(slist[0]))
-            # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(sdate))
-            self.data_DateBudget = sdate
-            # self.ui_budget_by_categories.dateEditBudget.setDate(QDate(2023, 7, 25))
-        except Exception as e:
-            return
-    
-    def cell_pressed_table_last_operations(self, row, column) -> None:
-        """Данные в выбранной строке таблицы"""
-        # row - принимает координаты строки
-        # column - принимает координаты столбца
-        # print("Row %d and Column %d was clicked" % (row, column))
-        
-        ## item = self.table.itemAt(row, column)        
-        # print(self.ui_persons.tableWidget.item(row, column).text())  # значение в ячейке
-        # print(self.ui_persons.tableWidget.item(row, 0).text())
-        ## self.ID = item.text()
-        #person_id = self.ui_persons.tableWidget.item(current_row, 0).text()
-        pass
-    
-    
+            # Перемещаем курсор в конец (иначе он останется в начале)
+            cursor = self.ui_journal.plainTextEditNote.textCursor()
+            cursor.movePosition(cursor.End)
+            self.ui_journal.plainTextEditNote.setTextCursor(cursor)
     
     def cell_clicked(self, row, column) -> None:
         """Данные в выбранной строке таблицы (вызывается из других функций)"""
@@ -740,42 +667,17 @@ class Journal(QtWidgets.QMainWindow):
         # column - принимает координаты столбца
         # print("Row %d and Column %d was clicked" % (row, column))
         
-        # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        self.value_elements(row)
     
     def on_cell_clicked(self, index):
+        """Данные в выбранной строке таблицы"""
         if index.isValid():
             row = index.row()
             # column = index.column()
             # data = index.data()
             # print("Клик по строке {row}, столбцу {column}, данные: {data}".format(row=row, column=column, data=data))
             
-            # TODO Ф.И.О.
-            value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-            self.ui_employes_catalog.lineEdit.setText(value1)
-            """
-            # TODO Оценка цели
-            value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-            self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-            # TODO Желаемый возраст достижения цели
-            value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-            self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-            # TODO Имеющиеся накопления для достижения цели
-            value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-            self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-            """
+            self.value_elements(row)
     
     def on_cell_activated(self, index):
         """Данные в выбранной строке таблицы"""
@@ -785,21 +687,7 @@ class Journal(QtWidgets.QMainWindow):
         # print("Данные: {index_data}".format(index_data=index.data()))
         # Данные: index.data() или модель.index(row, col).data()
         
-        # TODO Ф.И.О.
-        value1 = self.ui_employes_catalog.tableView.model().data(self.ui_employes_catalog.tableView.model().index(row, 1))
-        self.ui_employes_catalog.lineEdit.setText(value1)
-        
-        """
-        # TODO Оценка цели
-        value2 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 2)).replace(' ', '')
-        self.ui_personal_plan.spinBoxGoalEvaluation.setValue(int(value2))
-        # TODO Желаемый возраст достижения цели
-        value3 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 3)).replace(' ', '')
-        self.ui_personal_plan.spinBoxAgeGoal.setValue(int(value3))
-        # TODO Имеющиеся накопления для достижения цели
-        value4 = self.ui_personal_plan.tableViewAdditionalGoals.model().data(self.ui_personal_plan.tableViewAdditionalGoals.model().index(row, 4)).replace(' ', '')
-        self.ui_personal_plan.spinBoxMoneyForGoal.setValue(int(value4))
-        """
+        self.value_elements(row)
     
     def on_cell_pressed(index):
         """Slot для обработки нажатия"""
@@ -812,19 +700,67 @@ class Journal(QtWidgets.QMainWindow):
         # value = index.data()
         pass
     
+    def value_elements(self, row):
+        """Присваиваем значения элементам из таблицы"""
+        # TODO Задание
+        value1 = self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 1))
+        self.ui_journal.plainTextEditTask.setPlainText(value1)
+        
+        # TODO Примечание
+        value2 = self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 2))
+        self.ui_journal.plainTextEditNote.setPlainText(value2)
+        
+        # TODO Дата начала
+        slist1 = str(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 3))).split(".")
+        sdate1 = dt.date(int(slist1[2]), int(slist1[1]), int(slist1[0]))
+        self.ui_journal.dateEditStart.setDate(QDate(sdate1))
+        # self.ui_journal.dateEditStart.setDate(QDate(2023, 7, 25))
+        
+        # TODO Дата окончания
+        slist2 = str(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 4))).split(".")
+        sdate2 = dt.date(int(slist2[2]), int(slist2[1]), int(slist2[0]))
+        self.ui_journal.dateEditEnd.setDate(QDate(sdate2))
+        # self.ui_journal.dateEditEnd.setDate(QDate(2023, 7, 25))
+        
+        # TODO Время окончания
+        time_data = self.ui_journal.tableView.model().data(
+            self.ui_journal.tableView.model().index(row, 5)
+        )
+        
+        if time_data:
+            if time_data != '-':
+                self.ui_journal.checkBox_2.setChecked(True)
+                try:
+                    parts = str(time_data).split(":")
+                    if len(parts) == 2:
+                        hour, minute = int(parts[0]), int(parts[1])
+                        if 0 <= hour <= 23 and 0 <= minute <= 59:
+                            self.ui_journal.timeEdit.setTime(QTime(hour, minute))
+                except (ValueError, IndexError):
+                    pass  # логирование ошибки при необходимости
+            else:
+                self.ui_journal.checkBox_2.setChecked(False)
+        else:
+            self.ui_journal.checkBox_2.setChecked(False)
+        
+        # TODO Исполнитель
+        self.ui_journal.comboBoxEmploye.setCurrentText(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 6)))
+        
+        # TODO Руководитель
+        self.ui_journal.comboBoxBoss.setCurrentText(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 7)))
+        
+        # TODO Отметка о выполнении
+        if int(self.ui_journal.tableView.model().data(self.ui_journal.tableView.model().index(row, 9))) == 0:
+            self.ui_journal.checkBox.setChecked(False)
+        else:
+            self.ui_journal.checkBox.setChecked(True)
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    def check_time(self, state):
+        """Блокировка времени"""
+        if state:
+            self.ui_journal.timeEdit.setEnabled(True)
+        else:
+            self.ui_journal.timeEdit.setEnabled(False)
     
     def bool_enabled_elements(self, boolean) -> None:
         """Активация / деактивация элементов управления"""
@@ -840,13 +776,6 @@ class Journal(QtWidgets.QMainWindow):
             self.ui_journal.timeEdit.setEnabled(False)
         else:
             self.ui_journal.timeEdit.setEnabled(True)
-        
-        """
-        self.ui_journal.lineEditNameGoal.setEnabled(not boolean)
-        self.ui_journal.spinBoxGoalEvaluation.setEnabled(not boolean)
-        self.ui_journal.spinBoxAgeGoal.setEnabled(not boolean)
-        self.ui_journal.spinBoxMoneyForGoal.setEnabled(not boolean)
-        """
         
         self.ui_journal.tableView.setEnabled(boolean)
         
@@ -878,93 +807,6 @@ class Journal(QtWidgets.QMainWindow):
         
         self.ui_journal.checkBox_2.setChecked(False)
         self.ui_journal.checkBox.setChecked(False)
-
-
-
-
-
-class BossFIO:
-    # Для Astra Linux 1.6 (Python 3.5.3)
-    def __init__(self, ui, parent_window, **kwargs):
-        self.ui_journal = ui  # передаём ссылку на UI (type: Ui_JournalWindow)
-        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
-        
-        self.list_boss_fio = []  # Список (массив) Ф.И.О. руководителя
-        self.dict_boss_fio = {}  # Словарь (справочник) id, fio
-        
-        self.completer_lineEditBossFio = None  # Заполнение поле поиска
-        
-        # Загружаем данные сразу при создании объекта
-        self.load_combo_box_boss_fio()
-    
-    """
-    def __init__(self, ui: Ui_JournalWindow, parent_window, **kwargs):  # Добавлена аннотация типа (аннотация - подсказки для разработчиков)
-        self.ui_journal: Ui_JournalWindow = ui  # Аннотация типа для атрибута и передаём ссылку на UI (аннотация - подсказки для разработчиков)
-        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
-    """
-    
-    ####################################################################################################################
-    # Загрузка Ф.И.О. руководителя
-    ####################################################################################################################
-    def load_bosses(self) -> list:
-        """Загружаем данные из таблицы"""
-        try:
-            journal = JournalDb()
-            data = journal.load_data_bosses()
-        except Exception as err:
-            # print("Ошибка при работе с sqlite", err)
-            # QMessageBox.critical(self, 'Внимание', 'Ошибка при работе с sqlite {0}'.format(err))
-            QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибка при работе с sqlite {0}'.format(err))
-            return
-        else:
-            return data
-    
-    def load_combo_box_boss_fio(self) -> None:
-        """Заполняем comboBoxBoss данными"""
-        for value_tuple in self.load_bosses():
-            _id = int(value_tuple[0])  # Присваиваем id записи
-            fio = str(value_tuple[1])  # Указываем Ф.И.О.
-            # fio = str(value_tuple[1]) + " " + str(value_tuple[2]) + " " + str(value_tuple[3])  # Указываем Ф.И.О.
-            self.list_boss_fio.append(fio)  # Заполняем список (массив)
-            self.dict_boss_fio[fio] = _id   # Заполняем словарь (справочник)
-            
-            self.ui_journal.comboBoxBoss.addItem(fio, _id)  # Добавляем Ф.И.О. и id
-            
-            # совмещаем QLineEdit с данными
-            ################################################
-            from PyQt5.QtWidgets import QCompleter
-            self.completer_lineEditBossFio = QCompleter(self.list_boss_fio)
-            self.ui_journal.lineEditFindBossFio.setCompleter(self.completer_lineEditBossFio)
-            ################################################
-            
-            # Выводим id сотрудника
-            ################################################
-            # self.ui_journal.lineEditFindBossFio.editingFinished.connect(self.id_person_show)
-    
-    def id_person_show(self) -> None:
-        if self.ui_journal.lineEditFindBossFio.text().strip():
-            try:
-                _id = self.dict_boss_fio[self.ui_journal.lineEditFindBossFio.text().strip()]
-            except KeyError as err:
-                self.ui_journal.lineEditFindBossFio.setText("")
-                # print("Ошибочное значение {0}".format(err))
-                # QMessageBox.critical(self, 'Внимание', 'Ошибочное значение {0}'.format(err))
-                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
-                return 
-            else:
-                txt = self.ui_journal.lineEditFindBossFio.text().strip()
-                # print(txt + " id = " + str(_id))
-                self.ui_journal.comboBoxBoss.setCurrentText(txt)
-                self.ui_journal.lineEditFindBossFio.setText("")
-        else:
-            return
-    
-    def id_data_current_boss_fio(self) -> None:
-        # self.id_person = self.ui_journal.comboBoxBoss.currentData()
-        # _id = self.ui_journal.comboBoxBoss.currentData()
-        # txt = self.ui_journal.comboBoxBoss.currentText()
-        pass
-    ####################################################################################################################
 
 
 class EmployeFIO:
@@ -1010,10 +852,12 @@ class EmployeFIO:
             fio = str(value_tuple[1])  # Указываем Ф.И.О.
             # fio = str(value_tuple[1]) + " " + str(value_tuple[2]) + " " + str(value_tuple[3])  # Указываем Ф.И.О.
             self.list_employe_fio.append(fio)  # Заполняем список (массив)
-            self.dict_employe_fio[fio] = _id   # Заполняем словарь (справочник)
+            # self.dict_employe_fio[fio] = _id   # Заполняем словарь (справочник)
+            self.dict_employe_fio[fio.lower()] = _id   # Заполняем словарь (справочник) - ключи в нижнем регистре
             
             self.ui_journal.comboBoxEmploye.addItem(fio, _id)  # Добавляем Ф.И.О. и id
             
+            """
             # совмещаем QLineEdit с данными
             ################################################
             from PyQt5.QtWidgets import QCompleter
@@ -1024,7 +868,48 @@ class EmployeFIO:
             # Выводим id сотрудника
             ################################################
             # self.ui_journal.lineEditFindEmployeFio.editingFinished.connect(self.id_person_show)
+            """
+            
+            # совмещаем QLineEdit с данными
+            ################################################
+            from PyQt5.QtWidgets import QCompleter
+            from PyQt5.QtCore import Qt
+            
+            self.completer_lineEditEmployeFio = QCompleter(self.list_employe_fio)
+            # Включаем регистронезависимую фильтрацию через отдельный метод
+            self.completer_lineEditEmployeFio.setCaseSensitivity(Qt.CaseInsensitive)
+            # Устанавливаем режим поиска (содержит подстроку)
+            self.completer_lineEditEmployeFio.setFilterMode(Qt.MatchContains)
+            self.ui_journal.lineEditFindEmployeFio.setCompleter(self.completer_lineEditEmployeFio)
+            ################################################
+            
+            # Установите режим завершения, который всегда показывает список
+            # self.completer_lineEditEmployeFio.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
     
+    def id_person_show(self) -> None:
+        if self.ui_journal.lineEditFindEmployeFio.text().strip():
+            search_text = self.ui_journal.lineEditFindEmployeFio.text().strip().lower()  # Приводим к нижнему регистру
+            try:
+                _id = self.dict_employe_fio[search_text]  # Ищем по ключу в нижнем регистре
+            except KeyError as err:
+                self.ui_journal.lineEditFindEmployeFio.setText("")
+                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                return 
+            else:
+                # Находим исходное написание ФИО для отображения
+                original_fio = None
+                for fio in self.list_employe_fio:
+                    if fio.lower() == search_text:
+                        original_fio = fio
+                        break
+                
+                if original_fio:
+                    self.ui_journal.comboBoxEmploye.setCurrentText(original_fio)
+                    self.ui_journal.lineEditFindEmployeFio.setText("")
+        else:
+            return
+    
+    """
     def id_person_show(self) -> None:
         if self.ui_journal.lineEditFindEmployeFio.text().strip():
             try:
@@ -1042,11 +927,137 @@ class EmployeFIO:
                 self.ui_journal.lineEditFindEmployeFio.setText("")
         else:
             return
+    """
     
     def id_data_current_employe_fio(self) -> None:
         # self.id_person = self.ui_journal.comboBoxEmploye.currentData()
         # _id = self.ui_journal.comboBoxEmploye.currentData()
         # txt = self.ui_journal.comboBoxEmploye.currentText()
+        pass
+    ####################################################################################################################
+
+
+class BossFIO:
+    # Для Astra Linux 1.6 (Python 3.5.3)
+    def __init__(self, ui, parent_window, **kwargs):
+        self.ui_journal = ui  # передаём ссылку на UI (type: Ui_JournalWindow)
+        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
+        
+        self.list_boss_fio = []  # Список (массив) Ф.И.О. руководителя
+        self.dict_boss_fio = {}  # Словарь (справочник) id, fio
+        
+        self.completer_lineEditBossFio = None  # Заполнение поле поиска
+        
+        # Загружаем данные сразу при создании объекта
+        self.load_combo_box_boss_fio()
+    
+    """
+    def __init__(self, ui: Ui_JournalWindow, parent_window, **kwargs):  # Добавлена аннотация типа (аннотация - подсказки для разработчиков)
+        self.ui_journal: Ui_JournalWindow = ui  # Аннотация типа для атрибута и передаём ссылку на UI (аннотация - подсказки для разработчиков)
+        self.parent_window = parent_window  # Сохраняем ссылку на родительское окно
+    """
+    
+    ####################################################################################################################
+    # Загрузка Ф.И.О. руководителя
+    ####################################################################################################################
+    def load_bosses(self) -> list:
+        """Загружаем данные из таблицы"""
+        try:
+            journal = JournalDb()
+            data = journal.load_data_bosses()
+        except Exception as err:
+            # print("Ошибка при работе с sqlite", err)
+            # QMessageBox.critical(self, 'Внимание', 'Ошибка при работе с sqlite {0}'.format(err))
+            QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибка при работе с sqlite {0}'.format(err))
+            return
+        else:
+            return data
+    
+    def load_combo_box_boss_fio(self) -> None:
+        """Заполняем comboBoxBoss данными"""
+        for value_tuple in self.load_bosses():
+            _id = int(value_tuple[0])  # Присваиваем id записи
+            fio = str(value_tuple[1])  # Указываем Ф.И.О.
+            # fio = str(value_tuple[1]) + " " + str(value_tuple[2]) + " " + str(value_tuple[3])  # Указываем Ф.И.О.
+            self.list_boss_fio.append(fio)  # Заполняем список (массив)
+            # self.dict_boss_fio[fio] = _id   # Заполняем словарь (справочник)
+            self.dict_boss_fio[fio.lower()] = _id   # Заполняем словарь (справочник) - ключи в нижнем регистре
+            
+            self.ui_journal.comboBoxBoss.addItem(fio, _id)  # Добавляем Ф.И.О. и id
+            
+            """
+            # совмещаем QLineEdit с данными
+            ################################################
+            from PyQt5.QtWidgets import QCompleter
+            
+            self.completer_lineEditBossFio = QCompleter(self.list_boss_fio)
+            self.ui_journal.lineEditFindBossFio.setCompleter(self.completer_lineEditBossFio)
+            ################################################
+            """
+            
+            # совмещаем QLineEdit с данными
+            ################################################
+            from PyQt5.QtWidgets import QCompleter
+            from PyQt5.QtCore import Qt
+            
+            self.completer_lineEditBossFio = QCompleter(self.list_boss_fio)
+            # Включаем регистронезависимую фильтрацию через отдельный метод
+            self.completer_lineEditBossFio.setCaseSensitivity(Qt.CaseInsensitive)
+            # Устанавливаем режим поиска (содержит подстроку)
+            self.completer_lineEditBossFio.setFilterMode(Qt.MatchContains)
+            self.ui_journal.lineEditFindBossFio.setCompleter(self.completer_lineEditBossFio)
+            ################################################
+            
+            # Установите режим завершения, который всегда показывает список
+            # self.completer_lineEditBossFio.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+    
+    def id_person_show(self) -> None:
+        if self.ui_journal.lineEditFindBossFio.text().strip():
+            search_text = self.ui_journal.lineEditFindBossFio.text().strip().lower()  # Приводим к нижнему регистру
+            try:
+                _id = self.dict_boss_fio[search_text]  # Ищем по ключу в нижнем регистре
+            except KeyError as err:
+                self.ui_journal.lineEditFindBossFio.setText("")
+                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                return 
+            else:
+                # Находим исходное написание ФИО для отображения
+                original_fio = None
+                for fio in self.list_boss_fio:
+                    if fio.lower() == search_text:
+                        original_fio = fio
+                        break
+                
+                if original_fio:
+                    self.ui_journal.comboBoxBoss.setCurrentText(original_fio)
+                    self.ui_journal.lineEditFindBossFio.setText("")
+        else:
+            return
+    
+    """
+    def id_person_show(self) -> None:
+        if self.ui_journal.lineEditFindBossFio.text().strip():
+            try:
+                _id = self.dict_boss_fio[self.ui_journal.lineEditFindBossFio.text().strip()]
+            except KeyError as err:
+                self.ui_journal.lineEditFindBossFio.setText("")
+                # print("Ошибочное значение {0}".format(err))
+                # QMessageBox.critical(self, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                QMessageBox.warning(self.parent_window, 'Внимание', 'Ошибочное значение {0}'.format(err))
+                return 
+            else:
+                txt = self.ui_journal.lineEditFindBossFio.text().strip()
+                # print(txt + " id = " + str(_id))
+                self.ui_journal.comboBoxBoss.setCurrentText(txt)
+                self.ui_journal.lineEditFindBossFio.setText("")
+        else:
+            return
+    """
+    
+    def id_data_current_boss_fio(self) -> None:
+        # self.id_person = self.ui_journal.comboBoxBoss.currentData()
+        # _id = self.ui_journal.comboBoxBoss.currentData()
+        # txt = self.ui_journal.comboBoxBoss.currentText()
         pass
     ####################################################################################################################
 
@@ -1075,17 +1086,21 @@ class TableModel:
                 "data_id", 
                 "Задание",
                 "Примечание",
-                "Начало\nвыполнения",
-                "Завершение\nвыполнения",
-                "Завершить к",
-                "Руководитель",
+                "Дата\nначала", 
+                "Дата\nзавершения",
+                "Время\nзавершения",
                 "Исполнитель",
+                "Руководитель",
                 "days_difference",
                 "done",
-                "boss_id",
-                "employee_id"
+                "employee_id",
+                "boss_id"
             ]
             model.setHorizontalHeaderLabels(headers)
+            
+            # 2. Опционально: автоматическая подгонка ширины столбцов под содержимое
+            header = self.ui_journal.tableView.horizontalHeader()
+            header.setSectionResizeMode(QHeaderView.ResizeToContents)
         else:
             # 1. Создаем модель
             model = QStandardItemModel()
@@ -1095,15 +1110,15 @@ class TableModel:
                 "data_id", 
                 "Задание",
                 "Примечание",
-                "Начало\nвыполнения",
-                "Завершение\nвыполнения",
-                "Завершить к",
-                "Руководитель",
+                "Дата\nначала", 
+                "Дата\nзавершения",
+                "Время\nзавершения",
                 "Исполнитель",
+                "Руководитель",
                 "days_difference",
                 "done",
-                "boss_id",
-                "employee_id"
+                "employee_id",
+                "boss_id"
             ]
             model.setHorizontalHeaderLabels(headers)
             
@@ -1113,7 +1128,7 @@ class TableModel:
             # 3. Присваиваем модель таблице
             self.ui_journal.tableView.setModel(model)
             
-            # 4. Скрываем столбцы data_id (индекс 0), days_difference (индекс 8), done (индекс 9), boss_id (индекс 10), employee_id (индекс 11)
+            # 4. Скрываем столбцы data_id (индекс 0), days_difference (индекс 8), done (индекс 9), employee_id (индекс 10), boss_id (индекс 11)
             self.ui_journal.tableView.setColumnHidden(0, True)
             self.ui_journal.tableView.setColumnHidden(8, True)
             self.ui_journal.tableView.setColumnHidden(9, True)
@@ -1127,3 +1142,41 @@ class TableModel:
             # 6. Опционально: автоматическая подгонка ширины столбцов под содержимое
             header = self.ui_journal.tableView.horizontalHeader()
             header.setSectionResizeMode(QHeaderView.ResizeToContents)
+
+
+class MultiColumnFilterProxyModel(QSortFilterProxyModel):
+    """Прокси-модель для фильтрации по нескольким столбцам"""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.filter_columns = {}  # словарь: {column: filter_text}
+    
+    def setFilterForColumn(self, column, filter_text):
+        """Установить фильтр для конкретного столбца"""
+        if filter_text and filter_text.strip():
+            self.filter_columns[column] = filter_text.strip().lower()
+        else:
+            if column in self.filter_columns:
+                del self.filter_columns[column]
+        self.invalidateFilter()
+    
+    def clearFilters(self):
+        """Очистить все фильтры"""
+        self.filter_columns.clear()
+        self.invalidateFilter()
+    
+    def filterAcceptsRow(self, source_row, source_parent):
+        """Переопределенный метод для фильтрации строк"""
+        if not self.filter_columns:
+            return True
+        
+        source_model = self.sourceModel()
+        
+        for column, filter_text in self.filter_columns.items():
+            index = source_model.index(source_row, column, source_parent)
+            data = source_model.data(index, Qt.DisplayRole)
+            
+            if data and filter_text not in str(data).lower():
+                return False
+        
+        return True

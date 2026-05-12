@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>311</width>
-    <height>141</height>
+    <width>351</width>
+    <height>151</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>311</width>
-    <height>141</height>
+    <width>351</width>
+    <height>151</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>311</width>
-    <height>141</height>
+    <width>351</width>
+    <height>151</height>
    </size>
   </property>
   <property name="font">
@@ -36,8 +36,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>291</width>
-      <height>121</height>
+      <width>331</width>
+      <height>131</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
