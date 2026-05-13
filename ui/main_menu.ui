@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>151</height>
+    <width>281</width>
+    <height>171</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>351</width>
-    <height>151</height>
+    <width>281</width>
+    <height>171</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>351</width>
-    <height>151</height>
+    <width>281</width>
+    <height>171</height>
    </size>
   </property>
   <property name="font">
@@ -36,20 +36,12 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>331</width>
-      <height>131</height>
+      <width>261</width>
+      <height>152</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btnEmployesCatalog">
-       <property name="text">
-        <string>Справочник
-испонителей</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QPushButton" name="btnBosesCatalog">
        <property name="text">
         <string>Справочник
@@ -57,7 +49,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="3" column="0">
       <widget class="QPushButton" name="btnTasksJournal">
        <property name="text">
         <string>Журнал
@@ -65,11 +57,11 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="btnDeadlineExpires">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btnEmployesCatalog">
        <property name="text">
-        <string>Истекает
-срок выполнения</string>
+        <string>Справочник
+исполнителей</string>
        </property>
       </widget>
      </item>
@@ -77,6 +69,11 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>btnEmployesCatalog</tabstop>
+  <tabstop>btnBosesCatalog</tabstop>
+  <tabstop>btnTasksJournal</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

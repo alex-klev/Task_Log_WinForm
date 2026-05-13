@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1051</width>
-    <height>651</height>
+    <width>1161</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1051</width>
-    <height>651</height>
+    <width>1161</width>
+    <height>741</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1051</width>
-    <height>651</height>
+    <width>1161</width>
+    <height>741</height>
    </size>
   </property>
   <property name="font">
@@ -36,8 +36,8 @@
      <rect>
       <x>10</x>
       <y>70</y>
-      <width>671</width>
-      <height>521</height>
+      <width>781</width>
+      <height>651</height>
      </rect>
     </property>
     <property name="alternatingRowColors">
@@ -50,45 +50,13 @@
      <enum>QAbstractItemView::SelectRows</enum>
     </property>
    </widget>
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>381</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLineEdit" name="lineEditFilterTask">
-       <property name="maxLength">
-        <number>25</number>
-       </property>
-       <property name="placeholderText">
-        <string>Фильтр задания</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEditFilterEmploye">
-       <property name="maxLength">
-        <number>25</number>
-       </property>
-       <property name="placeholderText">
-        <string>Фильтр исполнителя</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QGroupBox" name="groupBoxElements">
     <property name="enabled">
      <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>690</x>
+      <x>800</x>
       <y>60</y>
       <width>351</width>
       <height>531</height>
@@ -238,46 +206,10 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QComboBox" name="comboBoxSort">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>620</y>
-      <width>191</width>
-      <height>25</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget_3">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>20</y>
-      <width>265</width>
-      <height>34</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="QDateEdit" name="dateEditFrom">
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QDateEdit" name="dateEditTo">
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="gridLayoutWidget_4">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>810</x>
       <y>600</y>
       <width>241</width>
       <height>41</height>
@@ -392,24 +324,135 @@
      </item>
     </layout>
    </widget>
-   <widget class="QComboBox" name="comboBoxDataFilter">
+   <widget class="QGroupBox" name="groupBoxFilter">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>620</y>
-      <width>150</width>
-      <height>25</height>
+      <x>10</x>
+      <y>10</y>
+      <width>781</width>
+      <height>51</height>
      </rect>
     </property>
-    <property name="minimumSize">
-     <size>
-      <width>150</width>
-      <height>0</height>
-     </size>
+    <property name="title">
+     <string/>
     </property>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>761</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEditFilterEmploye">
+        <property name="maxLength">
+         <number>25</number>
+        </property>
+        <property name="placeholderText">
+         <string>Фильтр исполнителя</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QDateEdit" name="dateEditFrom">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Дата завершения с</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="lineEditFilterTask">
+        <property name="maxLength">
+         <number>25</number>
+        </property>
+        <property name="placeholderText">
+         <string>Фильтр задания</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QDateEdit" name="dateEditTo">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Дата завершения по</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="btnFilterOn">
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Применить фильтр</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../buttonIcons/funnel.ico</normaloff>../buttonIcons/funnel.ico</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tableView</tabstop>
+  <tabstop>lineEditFilterTask</tabstop>
+  <tabstop>lineEditFilterEmploye</tabstop>
+  <tabstop>dateEditFrom</tabstop>
+  <tabstop>dateEditTo</tabstop>
+  <tabstop>btnFilterOn</tabstop>
+  <tabstop>lineEditFindEmployeFio</tabstop>
+  <tabstop>comboBoxEmploye</tabstop>
+  <tabstop>lineEditFindBossFio</tabstop>
+  <tabstop>comboBoxBoss</tabstop>
+  <tabstop>plainTextEditTask</tabstop>
+  <tabstop>plainTextEditNote</tabstop>
+  <tabstop>dateEditStart</tabstop>
+  <tabstop>dateEditEnd</tabstop>
+  <tabstop>timeEdit</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>btnInsert</tabstop>
+  <tabstop>btnUpdate</tabstop>
+  <tabstop>btnDelete</tabstop>
+  <tabstop>btnSave</tabstop>
+  <tabstop>btnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

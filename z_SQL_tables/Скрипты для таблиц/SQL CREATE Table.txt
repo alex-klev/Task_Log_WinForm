@@ -57,7 +57,7 @@ CREATE TABLE journal (
 
 CREATE INDEX idx_journal_boss ON journal(boss_id);
 CREATE INDEX idx_journal_employee ON journal(employee_id);
-
+CREATE INDEX idx_date_end_task ON journal(date_end_task);
 
 
 

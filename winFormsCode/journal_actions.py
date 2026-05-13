@@ -2,12 +2,15 @@
 import sys
 import datetime as dt
 import time
+from dateutil.relativedelta import relativedelta
 
 # сторонние
 from PyQt5 import QtWidgets, QtGui # QtGui создает объект цвета в PyQt5 с использованием компонентов RGB 
 from PyQt5.QtCore import Qt, QDate, QTime, QSortFilterProxyModel
 from PyQt5.QtWidgets import QMessageBox, QDesktopWidget, QLineEdit, QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
+
+
 
 # свои
 from winForms import Ui_JournalWindow
@@ -31,6 +34,8 @@ class Journal(QtWidgets.QMainWindow):
         
         self.ui_journal.groupBoxElements.setEnabled(False)
         # self.ui_journal.groupBoxElements.enabled = False
+        
+        self.ui_journal.btnFilterOn.clicked.connect(self.load_data_db)
         
         self.ui_journal.lineEditFilterTask.textChanged.connect(self.on_filter_text_changed_task)  # Фильтрация
         self.ui_journal.lineEditFilterEmploye.textChanged.connect(self.on_filter_text_changed_employe)  # Фильтрация
@@ -77,6 +82,9 @@ class Journal(QtWidgets.QMainWindow):
         )
         table_model.create_model_table()  
         
+        # Установка диапазон дат 
+        self.set_dates_dynamic()
+        
         # Загружаем данные в таблицу
         self.load_data_db()
         
@@ -120,10 +128,66 @@ class Journal(QtWidgets.QMainWindow):
         # return dt.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
+    def set_dates(self):
+        """Диапазон дат"""
+        # Текущая дата
+        today = QDate.currentDate()
+        
+        # Первое число текущего месяца
+        first_day = QDate(today.year(), today.month(), 1)
+        self.ui_journal.dateEditFrom.setDate(first_day)
+        
+        # Последнее число текущего месяца
+        # Берём первый день следующего месяца и вычитаем один день
+        if today.month() == 12:
+            next_month_first = QDate(today.year() + 1, 1, 1)
+        else:
+            next_month_first = QDate(today.year(), today.month() + 1, 1)
+        
+        last_day = next_month_first.addDays(-1)
+        self.ui_journal.dateEditTo.setDate(last_day)
+    
+    def set_dates_dynamic(self):
+        """Диапазон дат"""
+        # Текущая дата
+        today = QDate.currentDate()
+        
+        # Текущая дата
+        self.ui_journal.dateEditFrom.setDate(today)
+        self.ui_journal.dateEditTo.setDate(self.check_date())
+    
+    @staticmethod
+    def check_date() -> dt.date:
+        """Прибавляем к текущей дате 1 месяц и вычитеаем 1 день"""
+        today = dt.date.today()
+        check_date = today + relativedelta(months=1, days=-1)
+        
+        # future_date = today + relativedelta(years=1, months=2, days=10)  # Добавление интервалов
+        # past_date = today - relativedelta(weeks=3)  # Вычитание интервалов
+        # previous_month_date = today + relativedelta(months=-1)  # Вычисление даты предыдущего месяца:
+        
+        # Определение последнего дня месяца
+        # first_day = datetime(year, month, 1)
+        # first_day + relativedelta(months=1, days=-1)
+        
+        # check_date = check_date - dt.timedelta(days=1)
+        # print(check_date)
+        return check_date
+    
     def load_data_db(self):
+        """Загрузка данных"""
+        
+        if self.ui_journal.dateEditFrom.date().toPyDate() > self.ui_journal.dateEditTo.date().toPyDate():
+            QMessageBox.warning(self, "Внимание", "Дата начала не может быть позже даты завершения")
+            self.ui_journal.dateEditFrom.setFocus()
+            return
+        
         try:
             # TODO Загружаем данные теста исполнителя
-            journal = JournalDb()
+            journal = JournalDb(
+                p10=self.ui_journal.dateEditFrom.date().toPyDate(),
+                p11=self.ui_journal.dateEditTo.date().toPyDate()  
+            )
             data = journal.load_data()
         except Exception as e:
             QMessageBox.warning(self, 'Внимание', "Ошибка при загрузке данных {e}".format(e=e))
@@ -142,7 +206,8 @@ class Journal(QtWidgets.QMainWindow):
                 
                 model = self.ui_journal.tableView.model()
                 if model and model.rowCount() > 0:
-                    model.removeRow(model.rowCount() - 1)
+                    model.removeRows(0, model.rowCount())  # при использовании фильтра between иначе удаляет по 1 строке
+                    # model.removeRow(model.rowCount() - 1)
                 #! ###########################################
                 #! ###########################################
             else:
@@ -184,10 +249,10 @@ class Journal(QtWidgets.QMainWindow):
         # 1. Создаём модель: строки = кол-во записей, столбцы = 12
         model = QStandardItemModel(len(data), 12)
         model.setHorizontalHeaderLabels([
-            "data_id", 
-            "Задание", 
-            "Примечание", 
-            "Дата\nначала", 
+            "data_id",
+            "Задание",
+            "Примечание",
+            "Дата\nначала",
             "Дата\nзавершения",
             "Время\nзавершения",
             "Исполнитель",
@@ -332,7 +397,7 @@ class Journal(QtWidgets.QMainWindow):
         header = self.ui_journal.tableView.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
-        #! ### Сортировка данных ###
+        #! ### Фильтрация данных ###
         # 7. Создаём прокси-модель и связываем
         self.proxy_model = MultiColumnFilterProxyModel(self)
         self.proxy_model.setSourceModel(model)
@@ -353,6 +418,10 @@ class Journal(QtWidgets.QMainWindow):
     
     def on_filter_text_changed_task(self, text):
         """Фильтрация по заданию"""
+        model = self.ui_journal.tableView.model()
+        if model and model.rowCount() == -1:
+            return
+        
         if text:
             self.proxy_model.setFilterForColumn(1, text)  # фильтр по заданию
         else:
@@ -360,6 +429,10 @@ class Journal(QtWidgets.QMainWindow):
     
     def on_filter_text_changed_employe(self, text):
         """Фильтрация по исполнителю"""
+        model = self.ui_journal.tableView.model()
+        if model and model.rowCount() == -1:
+            return
+        
         if text:
             self.proxy_model.setFilterForColumn(6, text)  # фильтр по исполнителю
         else:
@@ -500,6 +573,9 @@ class Journal(QtWidgets.QMainWindow):
             date_start = self.ui_journal.dateEditStart.date().toPyDate()  # дата начала задачи
             date_end = self.ui_journal.dateEditEnd.date().toPyDate()  # дата окончания задачи
             
+            filter_from = self.ui_journal.dateEditFrom.date().toPyDate() # фильтр от
+            filter_to = self.ui_journal.dateEditTo.date().toPyDate() # фильтр до
+            
             if self.ui_journal.checkBox_2.isChecked():
                 time_end = self.ui_journal.timeEdit.time().toString('hh:mm')  # время окончания задачи
             else:
@@ -538,7 +614,9 @@ class Journal(QtWidgets.QMainWindow):
                         p6=date_end,
                         p7=time_end,
                         p8=done,
-                        p9=self.get_current_datetime()
+                        p9=self.get_current_datetime(),
+                        p10=filter_from,
+                        p11=filter_to
                     )
                     journal.insert_data()
                 except Exception as e:
@@ -560,6 +638,9 @@ class Journal(QtWidgets.QMainWindow):
             date_start = self.ui_journal.dateEditStart.date().toPyDate()  # дата начала задачи
             date_end = self.ui_journal.dateEditEnd.date().toPyDate()  # дата окончания задачи
             
+            filter_from = self.ui_journal.dateEditFrom.date().toPyDate() # фильтр от
+            filter_to = self.ui_journal.dateEditTo.date().toPyDate() # фильтр до
+            
             if self.ui_journal.checkBox_2.isChecked():
                 time_end = self.ui_journal.timeEdit.time().toString('hh:mm')  # время окончания задачи
             else:
@@ -598,7 +679,9 @@ class Journal(QtWidgets.QMainWindow):
                         p6=date_end,
                         p7=time_end,
                         p8=done,
-                        p9=self.get_current_datetime()
+                        p9=self.get_current_datetime(),
+                        p10=filter_from,
+                        p11=filter_to
                     )
                     journal.update_data()
                 except Exception as e:
@@ -770,6 +853,7 @@ class Journal(QtWidgets.QMainWindow):
         self.ui_journal.btnUpdate.setEnabled(boolean)
         self.ui_journal.btnDelete.setEnabled(boolean)
         
+        self.ui_journal.groupBoxFilter.setEnabled(boolean)
         self.ui_journal.groupBoxElements.setEnabled(not boolean)
         
         if (self.ui_journal.groupBoxElements.isEnabled()) and (not self.ui_journal.checkBox_2.isChecked()):
@@ -1097,10 +1181,6 @@ class TableModel:
                 "boss_id"
             ]
             model.setHorizontalHeaderLabels(headers)
-            
-            # 2. Опционально: автоматическая подгонка ширины столбцов под содержимое
-            header = self.ui_journal.tableView.horizontalHeader()
-            header.setSectionResizeMode(QHeaderView.ResizeToContents)
         else:
             # 1. Создаем модель
             model = QStandardItemModel()
