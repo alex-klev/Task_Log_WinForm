@@ -336,6 +336,9 @@ class JournalDb:
         self.done = kwargs.get('p8', 0)  # отметка о выполнении
         self.current_datetime = kwargs.get('p9')  # Текущая дата и время
         
+        self.date_start_task_between = kwargs.get('p10')  # фильтр от
+        self.date_end_task_between = kwargs.get('p11')  # фильтр до
+        
         """
         print(self.data_id, 
                 self.boss_id,
@@ -384,9 +387,10 @@ class JournalDb:
                         FROM journal j
                         LEFT JOIN reference_bosses rb ON j.boss_id = rb.boss_id
                         LEFT JOIN reference_employes re ON j.employee_id = re.employee_id
+                        WHERE j.date_end_task BETWEEN ? AND ?
                         ORDER BY done, days_difference
-                    """
-                    ).fetchall()
+                    """,
+                    (self.date_start_task_between, self.date_end_task_between)).fetchall()
                 
                 """
                 data = cursor.execute("SELECT additional_goal_id, goal_name, goal_assessment, age, savings, years_left, capital, investing, investing_savings, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY additional_goal_id) AS 'row_number' FROM additional_goals "
