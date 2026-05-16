@@ -29,10 +29,9 @@ class MainMenu(QtWidgets.QMainWindow):
         
         self.show_new_form = False  # проверка загрузки новой формы
         
-        self.ui_main_menu.btnBosesCatalog.clicked.connect(self.btn_boses_catalog)
         self.ui_main_menu.btnEmployesCatalog.clicked.connect(self.btn_employes_catalog)
+        self.ui_main_menu.btnBosesCatalog.clicked.connect(self.btn_boses_catalog)
         self.ui_main_menu.btnTasksJournal.clicked.connect(self.btn_journal)
-        self.ui_main_menu.btnDeadlineExpires.clicked.connect(self.btn_deadline_expires)
     
     ######################################################
         # Центрирование окна осуществляется с помощью метода center()
@@ -81,15 +80,6 @@ class MainMenu(QtWidgets.QMainWindow):
         else:
             event.accept()
     
-    def btn_boses_catalog(self) -> None:
-        """Запуск формы каталога начальников"""
-        self.show_new_form = True  # Установка значения загрузки новой формы
-        self.start_form_boses_catalog = BosesCatalog()  # Подключаемся к классу BossCatalog
-        # self.start_form_boses_catalog = boses_catalog_actions.BosesCatalog()  # Подключаемся к классу BossCatalog
-        # self.start_form_boses_catalog.load_all_data_persons()  # Загружаем данные
-        self.start_form_boses_catalog.show()  # Запускаем форму boses_catalog
-        self.close()  # Закрываем текущую форму
-        
     def btn_employes_catalog(self) -> None:
         """Запуск формы каталога исполнителей"""
         self.show_new_form = True  # Установка значения загрузки новой формы
@@ -97,6 +87,15 @@ class MainMenu(QtWidgets.QMainWindow):
         # self.start_form_boss_catalog = employes_catalog_actions.EmployesCatalog()  # Подключаемся к классу EmployesCatalog
         # self.start_form_employes_catalog.load_all_data_persons()  # Загружаем данные
         self.start_form_employes_catalog.show()  # Запускаем форму employes_catalog
+        self.close()  # Закрываем текущую форму
+    
+    def btn_boses_catalog(self) -> None:
+        """Запуск формы каталога руководителей"""
+        self.show_new_form = True  # Установка значения загрузки новой форolnhмы
+        self.start_form_boses_catalog = BosesCatalog()  # Подключаемся к классу BossCatalog
+        # self.start_form_boses_catalog = boses_catalog_actions.BosesCatalog()  # Подключаемся к классу BossCatalog
+        # self.start_form_boses_catalog.load_all_data_persons()  # Загружаем данные
+        self.start_form_boses_catalog.show()  # Запускаем форму boses_catalog
         self.close()  # Закрываем текущую форму
     
     def btn_journal(self) -> None:
@@ -107,15 +106,6 @@ class MainMenu(QtWidgets.QMainWindow):
         # self.start_form_journal.load_all_data_persons()  # Загружаем данные
         self.start_form_journal.show()  # Запускаем форму journal
         self.close()  # Закрываем текущую форму
-    
-    def btn_deadline_expires(self) -> None:
-        """Запуск формы задач, где истекает срок выполнения"""
-        #! self.show_new_form = True  # Установка значения загрузки новой формы
-        # self.start_form_deadline_expires = DeadlineExpires()  # Подключаемся к классу DeadlineExpires
-        #! self.start_form_deadline_expires = deadline_expires.DeadlineExpires()  # Подключаемся к классу DeadlineExpires
-        # self.start_form_deadline_expires.load_all_data_persons()  # Загружаем данные
-        #! self.start_form_deadline_expires.show()  # Запускаем форму persons
-        #! self.close()  # Закрываем текущую форму
 
 
 if __name__ == '__main__':

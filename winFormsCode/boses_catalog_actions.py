@@ -106,6 +106,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
                 
                 model = self.ui_boses_catalog.tableView.model()
                 if model and model.rowCount() > 0:
+                    # model.removeRows(0, model.rowCount())  # при использовании фильтра between иначе удаляет по 1 строке
                     model.removeRow(model.rowCount() - 1)
                 #! ###########################################
                 #! ###########################################
@@ -165,7 +166,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
         header = self.ui_boses_catalog.tableView.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
-        #! ### Сортировка данных ###
+        #! ### Фильтрация данных ###
         # 7. Создаём прокси-модель и связываем
         self.proxy_model = QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(model)
@@ -177,7 +178,7 @@ class BosesCatalog(QtWidgets.QMainWindow):
         # 9. Включаем динамическую сортировку (при изменении данных)
         self.proxy_model.setDynamicSortFilter(True)
         
-        # 10. Настройка фильтрации (поиск по столбцу "Ф.И.О.\nруководителя" - индекс 1)
+        # 10. Настройка фильтрации (поиск по столбцу "Ф.И.О. руководителя" - индекс 1)
         self.proxy_model.setFilterKeyColumn(1)  # 1 - второй столбец
         self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)  # регистронезависимо
         
