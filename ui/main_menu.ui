@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>171</height>
+    <width>341</width>
+    <height>141</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>281</width>
-    <height>171</height>
+    <width>341</width>
+    <height>141</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>281</width>
-    <height>171</height>
+    <width>341</width>
+    <height>141</height>
    </size>
   </property>
   <property name="font">
@@ -36,28 +36,12 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>261</width>
-      <height>152</height>
+      <width>321</width>
+      <height>61</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
-      <widget class="QPushButton" name="btnBosesCatalog">
-       <property name="text">
-        <string>Справочник
-руководителей</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QPushButton" name="btnTasksJournal">
-       <property name="text">
-        <string>Журнал
-задач</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
       <widget class="QPushButton" name="btnEmployesCatalog">
        <property name="text">
         <string>Справочник
@@ -65,7 +49,29 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btnBosesCatalog">
+       <property name="text">
+        <string>Справочник
+руководителей</string>
+       </property>
+      </widget>
+     </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="btnTasksJournal">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>321</width>
+      <height>53</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Журнал
+задач</string>
+    </property>
    </widget>
   </widget>
  </widget>

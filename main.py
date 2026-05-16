@@ -91,7 +91,7 @@ class MainMenu(QtWidgets.QMainWindow):
     
     def btn_boses_catalog(self) -> None:
         """Запуск формы каталога руководителей"""
-        self.show_new_form = True  # Установка значения загрузки новой формы
+        self.show_new_form = True  # Установка значения загрузки новой форolnhмы
         self.start_form_boses_catalog = BosesCatalog()  # Подключаемся к классу BossCatalog
         # self.start_form_boses_catalog = boses_catalog_actions.BosesCatalog()  # Подключаемся к классу BossCatalog
         # self.start_form_boses_catalog.load_all_data_persons()  # Загружаем данные

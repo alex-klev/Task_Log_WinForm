@@ -10,8 +10,6 @@ from PyQt5.QtCore import Qt, QDate, QTime, QSortFilterProxyModel
 from PyQt5.QtWidgets import QMessageBox, QDesktopWidget, QLineEdit, QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-
-
 # свои
 from winForms import Ui_JournalWindow
 # from winForms.journal import Ui_JournalWindow
@@ -32,6 +30,8 @@ class Journal(QtWidgets.QMainWindow):
         
         self.setSql = ""
         
+        self.data_available = False  # Проверка имеются ли данные (применяем для поиска в таблие)
+        
         self.ui_journal.groupBoxElements.setEnabled(False)
         # self.ui_journal.groupBoxElements.enabled = False
         
@@ -49,9 +49,6 @@ class Journal(QtWidgets.QMainWindow):
         self.ui_journal.tableView.clicked.connect(self.on_cell_clicked)  # Клик по ячейке
         self.ui_journal.tableView.activated.connect(self.on_cell_activated)  # Данные в выбранной строке таблицы
         # self.ui_journal.tableView.pressed.connect(self.on_cell_pressed)  # Данные в выбранной строке таблицы
-        """
-        self.ui_journal.lineEdit.setEnabled(False)
-        """
         
         self.ui_journal.plainTextEditTask.textChanged.connect(self.limit_text_edit_task)
         self.ui_journal.plainTextEditNote.textChanged.connect(self.limit_text_edit_note)
@@ -83,7 +80,11 @@ class Journal(QtWidgets.QMainWindow):
         table_model.create_model_table()  
         
         # Установка диапазон дат 
+        """
+        self.set_dates_moth()
         self.set_dates_dynamic()
+        """
+        self.set_dates_year()
         
         # Загружаем данные в таблицу
         self.load_data_db()
@@ -94,7 +95,6 @@ class Journal(QtWidgets.QMainWindow):
         #        background-color: #D3D3D3;  /* Светло-серый цвет */
         #   }
         #""")
-        
         
     ######################################################
         # Центрирование окна осуществляется с помощью метода center()
@@ -128,7 +128,7 @@ class Journal(QtWidgets.QMainWindow):
         # return dt.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    def set_dates(self):
+    def set_dates_moth(self):
         """Диапазон дат"""
         # Текущая дата
         today = QDate.currentDate()
@@ -174,6 +174,24 @@ class Journal(QtWidgets.QMainWindow):
         # print(check_date)
         return check_date
     
+    def set_dates_year(self):
+        """Диапазон дат года"""
+        # Текущая дата
+        today = QDate.currentDate()
+        
+        # Первое число текущего года
+        first_day = QDate(today.year(), 1, 1)
+        self.ui_journal.dateEditFrom.setDate(first_day)
+        
+        # Последнее число текущего года
+        last_day = QDate(today.year(), 12, 31)
+        self.ui_journal.dateEditTo.setDate(last_day)
+    
+    
+    
+    
+    
+    
     def load_data_db(self):
         """Загрузка данных"""
         
@@ -195,6 +213,7 @@ class Journal(QtWidgets.QMainWindow):
             return
         else:
             if not data or data == [('',)]:
+                self.data_available = False  # Проверка имеются ли данные (применяем для поиска в таблие)
                 #! ###########################################
                 #! ### Удаляем последнюю запись в таблице ####
                 """
@@ -211,6 +230,7 @@ class Journal(QtWidgets.QMainWindow):
                 #! ###########################################
                 #! ###########################################
             else:
+                self.data_available = True  # Проверка имеются ли данные (применяем для поиска в таблие)
                 def transform_data(row):
                     """Функция для преобразования строки в словарь"""
                     return {
@@ -417,9 +437,9 @@ class Journal(QtWidgets.QMainWindow):
         #! #########################
     
     def on_filter_text_changed_task(self, text):
-        """Фильтрация по заданию"""
+        """Поиск задания"""
         model = self.ui_journal.tableView.model()
-        if model and model.rowCount() == -1:
+        if model and model.rowCount() == 0 and not self.data_available:
             return
         
         if text:
@@ -428,9 +448,9 @@ class Journal(QtWidgets.QMainWindow):
             self.proxy_model.setFilterForColumn(1, "")  # фильтр по заданию
     
     def on_filter_text_changed_employe(self, text):
-        """Фильтрация по исполнителю"""
+        """Поиск исполнителя"""
         model = self.ui_journal.tableView.model()
-        if model and model.rowCount() == -1:
+        if model and model.rowCount() == 0 and not self.data_available:
             return
         
         if text:

@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>1161</width>
-    <height>741</height>
+    <height>651</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1161</width>
-    <height>741</height>
+    <height>651</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1161</width>
-    <height>741</height>
+    <height>651</height>
    </size>
   </property>
   <property name="font">
@@ -37,7 +37,7 @@
       <x>10</x>
       <y>70</y>
       <width>781</width>
-      <height>651</height>
+      <height>571</height>
      </rect>
     </property>
     <property name="alternatingRowColors">
@@ -352,7 +352,7 @@
          <number>25</number>
         </property>
         <property name="placeholderText">
-         <string>Фильтр исполнителя</string>
+         <string>Поиск исполнителя</string>
         </property>
        </widget>
       </item>
@@ -378,7 +378,7 @@
          <number>25</number>
         </property>
         <property name="placeholderText">
-         <string>Фильтр задания</string>
+         <string>Поиск задания</string>
         </property>
        </widget>
       </item>

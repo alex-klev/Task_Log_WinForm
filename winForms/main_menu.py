@@ -14,29 +14,29 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(281, 171)
-        MainWindow.setMinimumSize(QtCore.QSize(281, 171))
-        MainWindow.setMaximumSize(QtCore.QSize(281, 171))
+        MainWindow.resize(341, 141)
+        MainWindow.setMinimumSize(QtCore.QSize(341, 141))
+        MainWindow.setMaximumSize(QtCore.QSize(341, 141))
         font = QtGui.QFont()
         font.setPointSize(12)
         MainWindow.setFont(font)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 261, 152))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 321, 61))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.btnBosesCatalog = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.btnBosesCatalog.setObjectName("btnBosesCatalog")
-        self.gridLayout.addWidget(self.btnBosesCatalog, 1, 0, 1, 1)
-        self.btnTasksJournal = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.btnTasksJournal.setObjectName("btnTasksJournal")
-        self.gridLayout.addWidget(self.btnTasksJournal, 3, 0, 1, 1)
         self.btnEmployesCatalog = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.btnEmployesCatalog.setObjectName("btnEmployesCatalog")
-        self.gridLayout.addWidget(self.btnEmployesCatalog, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.btnEmployesCatalog, 1, 0, 1, 1)
+        self.btnBosesCatalog = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.btnBosesCatalog.setObjectName("btnBosesCatalog")
+        self.gridLayout.addWidget(self.btnBosesCatalog, 1, 1, 1, 1)
+        self.btnTasksJournal = QtWidgets.QPushButton(self.centralwidget)
+        self.btnTasksJournal.setGeometry(QtCore.QRect(10, 80, 321, 53))
+        self.btnTasksJournal.setObjectName("btnTasksJournal")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -47,9 +47,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Главное меню"))
+        self.btnEmployesCatalog.setText(_translate("MainWindow", "Справочник\n"
+"исполнителей"))
         self.btnBosesCatalog.setText(_translate("MainWindow", "Справочник\n"
 "руководителей"))
         self.btnTasksJournal.setText(_translate("MainWindow", "Журнал\n"
 "задач"))
-        self.btnEmployesCatalog.setText(_translate("MainWindow", "Справочник\n"
-"исполнителей"))
